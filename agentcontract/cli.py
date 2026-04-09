@@ -200,5 +200,80 @@ pytest_plugins = ["agentcontract.pytest_plugin"]
     ))
 
 
+@cli.command()
+@click.option("--port", default=8080, help="Port to serve the dashboard on")
+def ui(port: int) -> None:
+    """Launch the AgentSpec Trace Visualizer dashboard."""
+    import http.server
+    import socketserver
+    import json
+    from agentcontract.snapshot import SnapshotManager
+    
+    # Path to dashboard build
+    local_dist = Path(__file__).parent.parent / "dashboard" / "dist"
+    packaged_dist = Path(__file__).parent / "ui_dist"
+    
+    if packaged_dist.exists():
+        dist_dir = packaged_dist
+    elif local_dist.exists():
+        dist_dir = local_dist
+    else:
+        console.print("[red]Error: Dashboard assets not found. Please build the dashboard.[/red]")
+        sys.exit(1)
+        
+    class DashboardHandler(http.server.SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=str(dist_dir), **kwargs)
+            
+        def do_GET(self):
+            if self.path == '/api/snapshots':
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
+                # Fetch snapshots
+                mgr = SnapshotManager()
+                snaps = []
+                for snap_path in mgr.list_snapshots():
+                    try:
+                        with open(snap_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                            snaps.append({
+                                'id': snap_path.stem,
+                                'name': snap_path.stem,
+                                'filename': snap_path.name,
+                                'path': str(snap_path),
+                                'trace': data
+                            })
+                    except Exception:
+                        pass
+                        
+                # Sort by start_time descending
+                snaps.sort(key=lambda x: x.get('trace', {}).get('start_time', 0), reverse=True)
+                
+                self.wfile.write(json.dumps(snaps).encode())
+                return
+                
+            return super().do_GET()
+            
+    # To prevent 'Address already in use' errors
+    socketserver.TCPServer.allow_reuse_address = True
+    
+    with socketserver.TCPServer(("", port), DashboardHandler) as httpd:
+        console.print(Panel(
+            f"[bold green]AgentSpec Trace Visualizer[/bold green]\n\n"
+            f"🚀 Server running on [cyan]http://localhost:{port}[/cyan]\n"
+            f"📂 Serving from [dim]{dist_dir}[/dim]\n\n"
+            f"Press Ctrl+C to stop.",
+            title="Dashboard",
+        ))
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            console.print("\nShutting down.")
+            sys.exit(0)
+
+
 if __name__ == "__main__":
     cli()

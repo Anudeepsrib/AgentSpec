@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentcontract"
-version = "0.1.0"
+version = "0.2.0"
 description = "The first agent testing framework built around deterministic contracts, not vibes."
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -75,6 +75,9 @@ Issues = "https://github.com/agentcontract/agentcontract/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["agentcontract"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"dashboard/dist" = "agentcontract/ui_dist"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

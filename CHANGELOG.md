@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-04-08
+
+### Added
+- **Asynchronous Agent Support**: Introduced `ContractRunner.arun()` and `wrap_tool_async` to natively run async agents and trace their execution safely alongside pytest-asyncio workflows.
+- **Multi-Agent Trackers**: Added the `agent_id` property allowing the system to stringently track concurrent interactions and cleanly validate tools triggered by discrete simulated agents.
+- **Performance Profiling**: Created new assertions limiting the aggregate agent processing times (`assert_total_duration_under(ms)`) and isolating single tool execution latency constraints (`within_ms(ms)`).
+- **Advanced Chaos Testing**: Upgraded the `ChaosInjector` to support configurable `random_failures` reflecting actual network stochasticity across long-running pipelines and natively wrapped tool injections with `ContractRunner.wrap_tools()`.
+
+### Changed
+- Major refactoring of assertion logic from monolithic structures in `result.py` into encapsulated module-level standalone assertions in `agentcontract/assertions/` to vastly improve open-source maintainability.
+
 ## [0.1.0] - 2024-XX-XX
 
 ### Added
@@ -65,12 +76,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Roadmap
 
-### [0.2.0] - Planned
-- Async agent support
-- Multi-agent scenario testing
-- Performance benchmarking assertions
-- Enhanced chaos strategies (random, circuit breaker)
-
 ### [0.3.0] - Planned
 - Web dashboard for trace visualization
 - Integration with popular agent frameworks
@@ -85,4 +90,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[0.2.0]: https://github.com/agentcontract/agentcontract/releases/tag/v0.2.0
 [0.1.0]: https://github.com/agentcontract/agentcontract/releases/tag/v0.1.0

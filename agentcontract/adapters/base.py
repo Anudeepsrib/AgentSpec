@@ -31,6 +31,25 @@ class BaseAdapter(ABC):
         """
         pass
 
+    @abstractmethod
+    async def arun(
+        self,
+        agent: Any,
+        input: str | dict[str, Any],
+        context: dict[str, Any] | None = None,
+    ) -> Any:
+        """Run an async agent with interception.
+
+        Args:
+            agent: The async agent to run
+            input: Input to the agent
+            context: Additional context
+
+        Returns:
+            Agent result
+        """
+        pass
+
     def record_tool_call(
         self,
         name: str,

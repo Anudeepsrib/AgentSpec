@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentSpec | Deterministic Agent Testing</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glow-orb top-left"></div>
+    <div class="glow-orb bottom-right"></div>
+    
+    <nav class="navbar glass">
+        <div class="nav-content">
+            <div class="brand">
+                <img src="logo.png" alt="AgentSpec Logo" class="logo-img">
+                <span class="brand-text">AgentSpec</span>
+            </div>
+            <div class="nav-links">
+                <a href="https://github.com/agentcontract/agentcontract">GitHub</a>
+                <a href="#features">Features</a>
+                <a href="#" class="cta-button">Documentation</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="badge">v0.2.0 is live</div>
+                <h1 class="hero-headline">The first agent testing framework built around <span class="text-gradient">deterministic contracts</span>.</h1>
+                <p class="hero-subheadline">Stop scoring your agent's output quality using probabilistic vibes. Start enforcing precisely what your agent MUST do, MUST NOT do, and in what order, using 100% deterministic code.</p>
+                <div class="hero-actions">
+                    <a href="#" class="btn-primary">Get Started in 2 Minutes</a>
+                    <div class="terminal-install">pip install agentcontract</div>
+                </div>
+            </div>
+            <div class="hero-visual glass">
+                <div class="editor-header">
+                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                    <span class="filename">test_booking.py</span>
+                </div>
+                <pre><code class="language-python">from agentcontract import contract, ContractRunner
+
+@contract("flight_booking")
+async def test_books_correct_flight():
+    runner = ContractRunner(adapter="openai")
+    result = await runner.arun(agent=my_agent, input="Book flight")
+
+    # The Deterministic Contract
+    result.must_call("search_flights")
+    result.must_call("book_flight").after("search_flights")
+    result.must_call("book_flight").with_args(destination="NYC")
+    result.must_not_call("cancel_booking")
+    
+    # Advanced Profiling
+    result.assert_total_duration_under(ms=5000)
+    
+    # Record Golden Trajectory
+    result.snapshot()</code></pre>
+            </div>
+        </div>
+    </header>
+
+    <section id="features" class="features-section">
+        <h2 class="section-title">Why AgentSpec?</h2>
+        <div class="feature-grid">
+            <div class="feature-card glass">
+                <div class="feature-icon">🛡️</div>
+                <h3>100% Deterministic</h3>
+                <p>No LLMs-as-judges giving you a random 0.8 passing score. AgentSpec assertions either pass or logically fail.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="feature-icon">🕵️</div>
+                <h3>Multi-Agent Tracking</h3>
+                <p>Ensure isolated agents execute precise tools strictly independently by asserting behaviors using trace tracking IDs.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="feature-icon">⏱️</div>
+                <h3>Performance Boundaries</h3>
+                <p>Strictly bounded SLAs. Restrict full execution loops or specify exact timeout bounds for singular external tool traces.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="feature-icon">🌪️</div>
+                <h3>Chaos Engine Testing</h3>
+                <p>Simulate production errors. Force tools to hit RateLimits, drop databases, or inject random stochastic latencies to verify application retry patterns.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>Built by Agents, For Agents. Released under the MIT License.</p>
+    </footer>
+</body>
+</html>

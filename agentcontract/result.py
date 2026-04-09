@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 from typing import Any, Self
 
+import time
+
 from agentcontract.interceptor import AgentTrace, ToolCall
 from agentcontract.snapshot import SnapshotManager
 from agentcontract.exceptions import (
@@ -15,6 +17,11 @@ from agentcontract.exceptions import (
     CountMismatch,
     ContractViolation,
 )
+from agentcontract.assertions.arg_assertions import assert_with_args, assert_with_args_containing, assert_with_args_matching
+from agentcontract.assertions.call_assertions import assert_must_call, assert_must_not_call
+from agentcontract.assertions.count_assertions import assert_exactly, assert_at_least, assert_at_most
+from agentcontract.assertions.order_assertions import assert_before, assert_after, assert_immediately_after
+
 
 
 class AgentResult:
@@ -25,30 +32,21 @@ class AgentResult:
         self._snapshot_manager = snapshot_manager or SnapshotManager()
         self._assertions_made: list[str] = []
 
-    def must_call(self, tool_name: str) -> ToolAssertion:
+    def must_call(self, tool_name: str, agent_id: str | None = None) -> ToolAssertion:
         """Assert that a tool must be called at least once."""
         self._assertions_made.append(f"must_call({tool_name})")
-        if not self.trace.has_call(tool_name):
-            raise ToolNotCalled(
-                f"Tool '{tool_name}' was not called but was required",
-                details={"required_tool": tool_name, "actual_calls": [c.name for c in self.trace.tool_calls]},
-            )
-        return ToolAssertion(self, tool_name)
+        assert_must_call(self.trace, tool_name, agent_id)
+        return ToolAssertion(self, tool_name, agent_id)
 
-    def must_not_call(self, tool_name: str) -> Self:
+    def must_not_call(self, tool_name: str, agent_id: str | None = None) -> Self:
         """Assert that a tool must not be called."""
         self._assertions_made.append(f"must_not_call({tool_name})")
-        calls = self.trace.get_calls(tool_name)
-        if calls:
-            raise ToolCalledUnexpectedly(
-                f"Tool '{tool_name}' was called but should not have been",
-                details={"forbidden_tool": tool_name, "call_count": len(calls), "steps": [c.step for c in calls]},
-            )
+        assert_must_not_call(self.trace, tool_name, agent_id)
         return self
 
-    def tool_call_count(self, tool_name: str) -> CountAssertion:
+    def tool_call_count(self, tool_name: str, agent_id: str | None = None) -> CountAssertion:
         """Start a count assertion for a tool."""
-        return CountAssertion(self, tool_name)
+        return CountAssertion(self, tool_name, agent_id)
 
     def snapshot(self, name: str | None = None, update: bool = False) -> Self:
         """Compare or save a snapshot of this trace."""
@@ -90,6 +88,21 @@ class AgentResult:
             )
         return self
 
+    def assert_total_duration_under(self, ms: float) -> Self:
+        """Assert that the total execution time was under ms milliseconds."""
+        self._assertions_made.append(f"assert_total_duration_under({ms})")
+        if self.trace.end_time is None:
+            total_time = (time.time() - self.trace.start_time) * 1000
+        else:
+            total_time = (self.trace.end_time - self.trace.start_time) * 1000
+        
+        if total_time > ms:
+            raise ContractViolation(
+                f"Agent took {total_time:.2f}ms, exceeding limit of {ms}ms",
+                details={"max_allowed_ms": ms, "actual_ms": total_time},
+            )
+        return self
+
     def get_assertion_summary(self) -> str:
         """Get a summary of assertions made."""
         return f"{len(self._assertions_made)} assertions"
@@ -98,186 +111,92 @@ class AgentResult:
 class ToolAssertion:
     """Fluent assertions about a specific tool call."""
 
-    def __init__(self, result: AgentResult, tool_name: str) -> None:
+    def __init__(self, result: AgentResult, tool_name: str, agent_id: str | None = None) -> None:
         self._result = result
         self._tool_name = tool_name
-        self._calls = result.trace.get_calls(tool_name)
+        self._agent_id = agent_id
 
     def with_args(self, **kwargs: Any) -> Self:
         """Assert exact argument match for at least one call."""
-        for call in self._calls:
-            if all(call.args.get(k) == v for k, v in kwargs.items()):
-                return self
-        raise ArgMismatch(
-            f"No call to '{self._tool_name}' had exact args: {kwargs}",
-            details={
-                "tool": self._tool_name,
-                "expected_args": kwargs,
-                "actual_calls": [c.args for c in self._calls],
-            },
-        )
+        assert_with_args(self._result.trace, self._tool_name, kwargs, self._agent_id)
+        return self
 
     def with_args_containing(self, **kwargs: Any) -> Self:
         """Assert that args contain expected values (subset match)."""
-        for call in self._calls:
-            if all(self._contains(call.args.get(k), v) for k, v in kwargs.items()):
-                return self
-        raise ArgMismatch(
-            f"No call to '{self._tool_name}' had args containing: {kwargs}",
-            details={
-                "tool": self._tool_name,
-                "expected_subset": kwargs,
-                "actual_calls": [c.args for c in self._calls],
-            },
-        )
+        assert_with_args_containing(self._result.trace, self._tool_name, kwargs, self._agent_id)
+        return self
 
     def with_args_matching(self, **kwargs: str) -> Self:
         """Assert that string args match regex patterns."""
-        for call in self._calls:
-            if all(
-                self._matches_regex(call.args.get(k), v) for k, v in kwargs.items()
-            ):
-                return self
-        raise ArgMismatch(
-            f"No call to '{self._tool_name}' had args matching patterns: {kwargs}",
-            details={
-                "tool": self._tool_name,
-                "expected_patterns": kwargs,
-                "actual_calls": [c.args for c in self._calls],
-            },
-        )
+        assert_with_args_matching(self._result.trace, self._tool_name, kwargs, self._agent_id)
+        return self
 
-    def before(self, other_tool: str) -> Self:
+    def before(self, other_tool: str, other_agent_id: str | None = None) -> Self:
         """Assert this tool was called before another."""
-        my_idx = self._result.trace.index_of(self._tool_name)
-        other_idx = self._result.trace.index_of(other_tool)
-
-        if my_idx == -1:
-            raise ToolNotCalled(f"Tool '{self._tool_name}' was not called")
-        if other_idx == -1:
-            raise ToolNotCalled(f"Reference tool '{other_tool}' was not called")
-
-        if my_idx >= other_idx:
-            raise OrderViolation(
-                f"'{self._tool_name}' (step {my_idx}) should be before '{other_tool}' (step {other_idx})",
-                details={"expected_before": self._tool_name, "expected_after": other_tool},
-            )
+        assert_before(self._result.trace, self._tool_name, other_tool, self._agent_id, other_agent_id)
         return self
 
-    def after(self, other_tool: str) -> Self:
+    def after(self, other_tool: str, other_agent_id: str | None = None) -> Self:
         """Assert this tool was called after another."""
-        my_idx = self._result.trace.index_of(self._tool_name)
-        other_idx = self._result.trace.index_of(other_tool)
-
-        if my_idx == -1:
-            raise ToolNotCalled(f"Tool '{self._tool_name}' was not called")
-        if other_idx == -1:
-            raise ToolNotCalled(f"Reference tool '{other_tool}' was not called")
-
-        if my_idx <= other_idx:
-            raise OrderViolation(
-                f"'{self._tool_name}' (step {my_idx}) should be after '{other_tool}' (step {other_idx})",
-                details={"expected_after": self._tool_name, "expected_before": other_tool},
-            )
+        assert_after(self._result.trace, self._tool_name, other_tool, self._agent_id, other_agent_id)
         return self
 
-    def immediately_after(self, other_tool: str) -> Self:
+    def immediately_after(self, other_tool: str, other_agent_id: str | None = None) -> Self:
         """Assert this tool was called immediately after another."""
-        my_idx = self._result.trace.index_of(self._tool_name)
-        other_idx = self._result.trace.index_of(other_tool)
-
-        if my_idx == -1:
-            raise ToolNotCalled(f"Tool '{self._tool_name}' was not called")
-        if other_idx == -1:
-            raise ToolNotCalled(f"Reference tool '{other_tool}' was not called")
-
-        if my_idx != other_idx + 1:
-            raise OrderViolation(
-                f"'{self._tool_name}' (step {my_idx}) should be immediately after '{other_tool}' (step {other_idx})",
-                details={"expected_after": self._tool_name, "expected_immediately_before": other_tool},
-            )
+        assert_immediately_after(self._result.trace, self._tool_name, other_tool, self._agent_id, other_agent_id)
         return self
 
     def exactly(self, n: int) -> Self:
         """Assert exactly n calls to this tool."""
-        count = len(self._calls)
-        if count != n:
-            raise CountMismatch(
-                f"Tool '{self._tool_name}' was called {count} times, expected exactly {n}",
-                details={"tool": self._tool_name, "expected": n, "actual": count},
-            )
+        assert_exactly(self._result.trace, self._tool_name, n, self._agent_id)
         return self
 
     def at_least(self, n: int) -> Self:
         """Assert at least n calls to this tool."""
-        count = len(self._calls)
-        if count < n:
-            raise CountMismatch(
-                f"Tool '{self._tool_name}' was called {count} times, expected at least {n}",
-                details={"tool": self._tool_name, "expected_min": n, "actual": count},
-            )
+        assert_at_least(self._result.trace, self._tool_name, n, self._agent_id)
         return self
 
     def at_most(self, n: int) -> Self:
         """Assert at most n calls to this tool."""
-        count = len(self._calls)
-        if count > n:
-            raise CountMismatch(
-                f"Tool '{self._tool_name}' was called {count} times, expected at most {n}",
-                details={"tool": self._tool_name, "expected_max": n, "actual": count},
-            )
+        assert_at_most(self._result.trace, self._tool_name, n, self._agent_id)
         return self
 
-    @staticmethod
-    def _contains(actual: Any, expected: Any) -> bool:
-        """Check if actual contains expected (for subset matching)."""
-        if actual == expected:
-            return True
-        if isinstance(actual, str) and isinstance(expected, str):
-            return expected in actual
-        if isinstance(actual, dict) and isinstance(expected, dict):
-            return all(actual.get(k) == v for k, v in expected.items())
-        return False
-
-    @staticmethod
-    def _matches_regex(value: Any, pattern: str) -> bool:
-        """Check if string value matches regex pattern."""
-        if not isinstance(value, str):
-            return False
-        return bool(re.search(pattern, value))
+    def within_ms(self, ms: float) -> Self:
+        """Assert that at least one call to this tool completed within ms milliseconds."""
+        calls = self._result.trace.get_calls(self._tool_name, self._agent_id)
+        if not calls:
+            raise ToolNotCalled(f"Tool '{self._tool_name}' was not called")
+        
+        if not any(c.duration_ms <= ms for c in calls):
+            durations = [c.duration_ms for c in calls]
+            min_duration = min(durations)
+            raise ContractViolation(
+                f"No call to '{self._tool_name}' completed within {ms}ms. Fastest was {min_duration:.2f}ms.",
+                details={"max_allowed_ms": ms, "actual_durations_ms": durations},
+            )
+        return self
 
 
 class CountAssertion:
     """Fluent count assertions."""
 
-    def __init__(self, result: AgentResult, tool_name: str) -> None:
+    def __init__(self, result: AgentResult, tool_name: str, agent_id: str | None = None) -> None:
         self._result = result
         self._tool_name = tool_name
-        self._count = result.trace.count_calls(tool_name)
+        self._agent_id = agent_id
 
     def exactly(self, n: int) -> AgentResult:
         """Assert exactly n calls."""
-        if self._count != n:
-            raise CountMismatch(
-                f"Tool '{self._tool_name}' was called {self._count} times, expected exactly {n}",
-                details={"tool": self._tool_name, "expected": n, "actual": self._count},
-            )
+        assert_exactly(self._result.trace, self._tool_name, n, self._agent_id)
         return self._result
 
     def at_least(self, n: int) -> AgentResult:
         """Assert at least n calls."""
-        if self._count < n:
-            raise CountMismatch(
-                f"Tool '{self._tool_name}' was called {self._count} times, expected at least {n}",
-                details={"tool": self._tool_name, "expected_min": n, "actual": self._count},
-            )
+        assert_at_least(self._result.trace, self._tool_name, n, self._agent_id)
         return self._result
 
     def at_most(self, n: int) -> AgentResult:
         """Assert at most n calls."""
-        if self._count > n:
-            raise CountMismatch(
-                f"Tool '{self._tool_name}' was called {self._count} times, expected at most {n}",
-                details={"tool": self._tool_name, "expected_max": n, "actual": self._count},
-            )
+        assert_at_most(self._result.trace, self._tool_name, n, self._agent_id)
         return self._result
+

@@ -1,12 +1,14 @@
-# Getting Started with agentcontract
+# 🚀 Getting Started with AgentSpec
 
-## Installation
+**The first agent testing framework built around strict deterministic contracts.**
+
+## 🛠 Installation
 
 ```bash
 pip install agentcontract
 ```
 
-For specific framework support:
+For specific framework adapter support:
 
 ```bash
 pip install agentcontract[openai]      # OpenAI support
@@ -15,24 +17,28 @@ pip install agentcontract[langchain]   # LangChain support
 pip install agentcontract[all]         # All adapters
 ```
 
-## Quick Start
+## 🏗 Quick Start
 
 ### 1. Write Your First Contract Test
 
+AgentSpec introduces strict, binary validations over probabilistic vibes. You can use standard synchronous agents, or explicitly execute asynchronous implementations.
+
 ```python
+import pytest
 from agentcontract import contract, ContractRunner
 
-@contract("my_first_contract")
-def test_agent_behavior():
+@pytest.mark.asyncio
+@contract("my_first_async_contract")
+async def test_agent_behavior():
     runner = ContractRunner()
     
-    # Run your agent
-    result = runner.run(
-        agent=my_agent,
+    # Run your agent asynchronously (also supports .run() for sync)
+    result = await runner.arun(
+        agent=my_async_agent,
         input="Book a flight to NYC"
     )
     
-    # Assert on tool calls
+    # Assert on exact tool triggers and order
     result.must_call("search_flights")
     result.must_call("book_flight").after("search_flights")
     result.must_not_call("cancel_booking")
@@ -40,122 +46,137 @@ def test_agent_behavior():
 
 ### 2. Run Your Tests
 
+Integrates beautifully natively into standard pytest execution protocols.
+
 ```bash
-# Run all contract tests
+# Run all contract tests via CLI
 agentcontract run
 
 # Run specific test file
 agentcontract run tests/test_contracts.py
 
-# Update snapshots
+# Update deterministic snapshots
 agentcontract snapshot update
 ```
 
-### 3. Set Up Snapshots
+### 3. Set Up Trajectory Snapshots
 
-Snapshots record the expected trajectory of tool calls:
+Snapshots record the exact JSON expected trajectory of tool calls preventing regression:
 
 ```python
 def test_with_snapshot():
     runner = ContractRunner()
     result = runner.run(agent=my_agent, input="Book flight")
     
-    # Compare against golden snapshot
+    # Locks the trajectory against a golden snapshot file
     result.snapshot("flight_booking_flow")
 ```
 
-First run creates the snapshot, subsequent runs verify against it.
+First run automatically creates the snapshot, and all subsequent runs verify against it with comprehensive code diffs on failure.
 
-## Key Concepts
+---
+
+## 🔐 Key Concepts
 
 ### Contracts
-
 A **Contract** is a deterministic assertion about agent behavior:
 - Which tools are called
 - In what order
 - With what arguments
 - How many times
+- How quickly they execute
 
-Unlike LLM-as-judge scoring, contracts are pass/fail with clear error messages.
+**Unlike LLM-as-judge scoring, contracts are strictly pass/fail.**
 
-### Assertions
+### Assertions API
 
-**Call Assertions:**
+#### Call Assertions
 - `result.must_call("tool_name")` - Tool must be called
 - `result.must_not_call("tool_name")` - Tool must not be called
 
-**Order Assertions:**
-- `result.must_call("a").before("b")` - Call before another
-- `result.must_call("a").after("b")` - Call after another
-- `result.must_call("a").immediately_after("b")` - Adjacent calls
+#### Multi-Agent Tracking
+AgentSpec uniquely tracks isolated calls within multi-agent swarms.
+- `result.must_call("search", agent_id="research_agent")`
 
-**Argument Assertions:**
-- `result.must_call("tool").with_args(**kwargs)` - Exact match
-- `result.must_call("tool").with_args_containing(**kwargs)` - Subset match
-- `result.must_call("tool").with_args_matching(**patterns)` - Regex match
+#### Order Constraints
+- `result.must_call("a").before("b")`
+- `result.must_call("a").after("b")`
+- `result.must_call("a").immediately_after("b")`
 
-**Count Assertions:**
+#### Parameter Validations
+- `result.must_call("tool").with_args(**kwargs)` - Exact dict match
+- `result.must_call("tool").with_args_containing(**kwargs)` - Subset parameter match
+- `result.must_call("tool").with_args_matching(**patterns)` - Regex parameter match
+
+#### Telemetry Performance Metrics
+- `result.assert_total_duration_under(ms=3000)` - Full execution bounded
+- `result.must_call("tool").within_ms(ms=100)` - Singular tool logic fast response verification
+
+#### Count Verifications
 - `result.tool_call_count("tool").exactly(n)`
 - `result.tool_call_count("tool").at_least(n)`
 - `result.tool_call_count("tool").at_most(n)`
 
-## Framework Integration
+---
+
+## 🔌 Framework Integration
+
+AgentSpec is designed to be fully agnostic. We supply adapters for the primary ecosystems automatically bridging function tracking.
 
 ### OpenAI
-
 ```python
 from agentcontract import ContractRunner
 
 runner = ContractRunner(adapter="openai")
-result = runner.run(agent=openai_client, input="Book flight")
+result = await runner.arun(agent=openai_async_client, input="Book flight")
 result.must_call("search_flights")
 ```
 
 ### Anthropic
-
 ```python
 runner = ContractRunner(adapter="anthropic")
 result = runner.run(agent=anthropic_client, input="Research topic")
 ```
 
-### LangChain
-
-```python
-runner = ContractRunner(adapter="langchain")
-result = runner.run(agent=langchain_agent, input="Process request")
-```
-
 ### Custom Agents
+If you prefer rolling your own solution, explicitly utilize the `interceptor`.
 
 ```python
 def my_agent(input_text, interceptor=None):
-    # Your agent logic
     if interceptor:
-        interceptor.record("my_tool", {"arg": "value"}, result)
-    return result
+        wrapped_tool = interceptor.wrap_tool(my_tool, "my_tool")
+        wrapped_tool(arg="value")
+    return "Done"
 
 runner = ContractRunner()
 result = runner.run(agent=my_agent, input="test")
 ```
 
-## Chaos Testing
+---
 
-Test agent resilience with injected failures:
+## 🌪 Chaos Testing
+Don't wait for AWS us-east-1 to crash to see if your agent has retry loops.
 
 ```python
 from agentcontract.chaos import ChaosInjector
 
 chaos = ChaosInjector()
+
+# Enforce explicit stochasticity 
+chaos.random_failures(probability=0.1)
+
+# Targeted component failure
 chaos.fail_tool("api", after_calls=1, error="RateLimitError")
 chaos.slow_tool("db", latency_ms=3000)
 
-result = runner.run(agent=my_agent, input="test", chaos=chaos)
-result.must_call("api").at_least(2)  # Expect retry
+result = await runner.arun(agent=my_agent, input="test", chaos=chaos)
+result.must_call("api").at_least(2)  # Proof the LLM retried successfully
 ```
 
-## CI Integration
+---
 
-Add to your GitHub Actions workflow:
+## ⚙️ CI Integration
+Add directly to your GitHub Actions pipeline for instant telemetry protection.
 
 ```yaml
 - name: Run agent contracts
@@ -164,8 +185,7 @@ Add to your GitHub Actions workflow:
     agentcontract run tests/
 ```
 
-## Next Steps
-
-- See `examples/` for complete examples
-- Read the API reference
-- Join the community discussions
+### Next Steps 🚀
+- Read the API reference.
+- Integrate Contract tests natively into your codebase.
+- Join the community discussions!

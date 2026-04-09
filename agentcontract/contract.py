@@ -90,6 +90,46 @@ class ContractRunner:
         finally:
             self._interceptor.stop()
 
+    async def arun(
+        self,
+        agent: Any,
+        input: str | dict[str, Any],
+        context: dict[str, Any] | None = None,
+        chaos: Any | None = None,
+    ) -> AgentResult:
+        """Run an async agent and capture its tool calls.
+
+        Args:
+            agent: The async agent function to run
+            input: Input to the agent
+            context: Additional context
+            chaos: Optional chaos injector
+
+        Returns:
+            AgentResult
+        """
+        self._interceptor.start()
+
+        try:
+            if chaos is not None:
+                agent = self._wrap_with_chaos_async(agent, chaos)
+
+            if self._adapter is not None:
+                if not hasattr(self._adapter, "arun"):
+                    raise NotImplementedError(f"Adapter {type(self._adapter).__name__} does not support arun()")
+                result = await self._adapter.arun(agent, input, context)
+            else:
+                if isinstance(input, dict):
+                    result = await agent(interceptor=self._interceptor, **input, **(context or {}))
+                else:
+                    result = await agent(input, interceptor=self._interceptor, **(context or {}))
+
+            self._interceptor.trace.finish(result)
+            return AgentResult(self._interceptor.trace, self._snapshot_manager)
+
+        finally:
+            self._interceptor.stop()
+
     def _wrap_with_chaos(
         self,
         agent: Callable[..., Any],
@@ -100,6 +140,46 @@ class ContractRunner:
             # Chaos injector modifies behavior during execution
             return agent(*args, **kwargs)
         return wrapper
+
+    def _wrap_with_chaos_async(
+        self,
+        agent: Callable[..., Any],
+        chaos: Any,
+    ) -> Callable[..., Any]:
+        """Wrap async agent execution with chaos injection."""
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            return await agent(*args, **kwargs)
+        return wrapper
+
+    def wrap_tools(
+        self,
+        tools: list[Callable[..., Any]],
+        chaos: Any | None = None,
+        agent_id: str | None = None,
+    ) -> list[Callable[..., Any]]:
+        """Wrap multiple tools with interception and optional chaos."""
+        wrapped_tools = []
+        for tool in tools:
+            tool_name = getattr(tool, "__name__", "unknown")
+            wrapped = chaos.apply(tool_name, tool) if chaos is not None else tool
+            wrapped = self._interceptor.wrap_tool(wrapped, tool_name=tool_name, agent_id=agent_id)
+            wrapped_tools.append(wrapped)
+        return wrapped_tools
+
+    def wrap_tools_async(
+        self,
+        tools: list[Callable[..., Any]],
+        chaos: Any | None = None,
+        agent_id: str | None = None,
+    ) -> list[Callable[..., Any]]:
+        """Wrap multiple async tools with interception and optional chaos."""
+        wrapped_tools = []
+        for tool in tools:
+            tool_name = getattr(tool, "__name__", "unknown")
+            wrapped = chaos.apply_async(tool_name, tool) if chaos is not None else tool
+            wrapped = self._interceptor.wrap_tool_async(wrapped, tool_name=tool_name, agent_id=agent_id)
+            wrapped_tools.append(wrapped)
+        return wrapped_tools
 
     def get_trace(self) -> AgentTrace:
         """Get the execution trace."""
@@ -133,7 +213,18 @@ def contract(name: str | None = None) -> Callable:
 
             # Run the test function
             try:
-                result = func(*args, **kwargs)
+                if inspect.iscoroutinefunction(func):
+                    # We can't await it here since wrapper might be running synchronously
+                    # if the user hasn't properly set up pytest-asyncio, but we must
+                    # return a coroutine if the function is async.
+                    async def async_run():
+                        result = await func(*args, **kwargs)
+                        if isinstance(result, AgentResult):
+                            return result
+                        return result
+                    return async_run()
+                else:
+                    result = func(*args, **kwargs)
 
                 # If result is AgentResult, check if snapshot was called
                 if isinstance(result, AgentResult):

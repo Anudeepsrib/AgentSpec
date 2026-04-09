@@ -59,6 +59,7 @@ class ChaosInjector:
     def __init__(self, seed: int | None = None) -> None:
         self._rules: dict[str, ChaosRule] = {}
         self._seed = seed
+        self._random_failure_prob: float = 0.0
         if seed is not None:
             random.seed(seed)
 
@@ -135,8 +136,8 @@ class ChaosInjector:
         return self
 
     def random_failures(self, probability: float = 0.1) -> Self:
-        """Enable random failures across all tools (not yet implemented)."""
-        # Placeholder for random failure mode
+        """Enable random failures across all tools."""
+        self._random_failure_prob = probability
         return self
 
     def apply(self, tool_name: str, original_func: Callable[..., Any]) -> Callable[..., Any]:
@@ -165,8 +166,34 @@ class ChaosInjector:
                 if rule.should_corrupt_now():
                     return rule.corrupt_response
 
+            if self._random_failure_prob > 0 and random.random() < self._random_failure_prob:
+                raise RuntimeError("Random chaos injected")
+
             # Normal execution
             return original_func(*args, **kwargs)
+
+        return wrapper
+
+    def apply_async(self, tool_name: str, original_func: Callable[..., Any]) -> Callable[..., Any]:
+        """Wrap an async tool function with chaos injection."""
+        import asyncio
+        rule = self._rules.get(tool_name)
+
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            if rule:
+                if rule.latency_ms > 0:
+                    await asyncio.sleep(rule.latency_ms / 1000.0)
+
+                if rule.should_fail_now():
+                    raise rule.get_error()
+
+                if rule.should_corrupt_now():
+                    return rule.corrupt_response
+
+            if self._random_failure_prob > 0 and random.random() < self._random_failure_prob:
+                raise RuntimeError("Random chaos injected")
+
+            return await original_func(*args, **kwargs)
 
         return wrapper
 

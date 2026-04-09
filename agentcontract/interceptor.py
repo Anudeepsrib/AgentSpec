@@ -18,6 +18,7 @@ class ToolCall:
     step: int
     timestamp: float
     duration_ms: float = 0.0
+    agent_id: str | None = None
     response: Any = field(default=None, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
@@ -28,6 +29,7 @@ class ToolCall:
             "step": self.step,
             "timestamp": self.timestamp,
             "duration_ms": self.duration_ms,
+            "agent_id": self.agent_id,
         }
 
     @staticmethod
@@ -55,6 +57,7 @@ class AgentTrace:
         args: dict[str, Any],
         response: Any = None,
         duration_ms: float = 0.0,
+        agent_id: str | None = None,
     ) -> ToolCall:
         """Record a tool call."""
         call = ToolCall(
@@ -63,6 +66,7 @@ class AgentTrace:
             step=len(self.tool_calls),
             timestamp=time.time(),
             duration_ms=duration_ms,
+            agent_id=agent_id,
             response=response,
         )
         self.tool_calls.append(call)
@@ -73,24 +77,27 @@ class AgentTrace:
         self.end_time = time.time()
         self.final_output = output
 
-    def get_calls(self, tool_name: str | None = None) -> list[ToolCall]:
-        """Get all calls, optionally filtered by name."""
-        if tool_name is None:
-            return list(self.tool_calls)
-        return [c for c in self.tool_calls if c.name == tool_name]
+    def get_calls(self, tool_name: str | None = None, agent_id: str | None = None) -> list[ToolCall]:
+        """Get all calls, optionally filtered by name and agent_id."""
+        calls = self.tool_calls
+        if tool_name is not None:
+            calls = [c for c in calls if c.name == tool_name]
+        if agent_id is not None:
+            calls = [c for c in calls if c.agent_id == agent_id]
+        return calls
 
-    def has_call(self, tool_name: str) -> bool:
+    def has_call(self, tool_name: str, agent_id: str | None = None) -> bool:
         """Check if a tool was called."""
-        return any(c.name == tool_name for c in self.tool_calls)
+        return len(self.get_calls(tool_name, agent_id)) > 0
 
-    def count_calls(self, tool_name: str) -> int:
+    def count_calls(self, tool_name: str, agent_id: str | None = None) -> int:
         """Count calls to a specific tool."""
-        return sum(1 for c in self.tool_calls if c.name == tool_name)
+        return len(self.get_calls(tool_name, agent_id))
 
-    def index_of(self, tool_name: str) -> int:
+    def index_of(self, tool_name: str, agent_id: str | None = None) -> int:
         """Get the step index of the first call to a tool."""
         for i, call in enumerate(self.tool_calls):
-            if call.name == tool_name:
+            if call.name == tool_name and (agent_id is None or call.agent_id == agent_id):
                 return i
         return -1
 
@@ -114,6 +121,7 @@ class AgentTrace:
                     step=c["step"],
                     timestamp=c["timestamp"],
                     duration_ms=c.get("duration_ms", 0.0),
+                    agent_id=c.get("agent_id"),
                 )
                 for c in data.get("tool_calls", [])
             ],
@@ -149,16 +157,18 @@ class TraceInterceptor:
         args: dict[str, Any],
         response: Any = None,
         duration_ms: float = 0.0,
+        agent_id: str | None = None,
     ) -> ToolCall:
         """Record a tool call if active."""
         if not self._active:
             raise RuntimeError("Interceptor not started")
-        return self.trace.record_call(name, args, response, duration_ms)
+        return self.trace.record_call(name, args, response, duration_ms, agent_id)
 
     def wrap_tool(
         self,
         func: Callable[..., Any],
         tool_name: str | None = None,
+        agent_id: str | None = None,
     ) -> Callable[..., Any]:
         """Wrap a tool function to intercept calls."""
         name = tool_name or getattr(func, "__name__", "unknown")
@@ -169,12 +179,37 @@ class TraceInterceptor:
                 result = func(*args, **kwargs)
                 duration = (time.time() - start) * 1000
                 call_args = kwargs if kwargs else ({"args": args} if args else {})
-                self.record(name, call_args, result, duration)
+                self.record(name, call_args, result, duration, agent_id)
                 return result
             except Exception as e:
                 duration = (time.time() - start) * 1000
                 call_args = kwargs if kwargs else ({"args": args} if args else {})
-                self.record(name, call_args, e, duration)
+                self.record(name, call_args, e, duration, agent_id)
+                raise
+
+        return wrapper
+
+    def wrap_tool_async(
+        self,
+        func: Callable[..., Any],
+        tool_name: str | None = None,
+        agent_id: str | None = None,
+    ) -> Callable[..., Any]:
+        """Wrap an async tool function to intercept calls."""
+        name = tool_name or getattr(func, "__name__", "unknown")
+
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            start = time.time()
+            try:
+                result = await func(*args, **kwargs)
+                duration = (time.time() - start) * 1000
+                call_args = kwargs if kwargs else ({"args": args} if args else {})
+                self.record(name, call_args, result, duration, agent_id)
+                return result
+            except Exception as e:
+                duration = (time.time() - start) * 1000
+                call_args = kwargs if kwargs else ({"args": args} if args else {})
+                self.record(name, call_args, e, duration, agent_id)
                 raise
 
         return wrapper

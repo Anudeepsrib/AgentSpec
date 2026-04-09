@@ -1,117 +1,125 @@
-# Contributing to agentcontract
+# 🤝 Contributing to AgentSpec
 
-Thank you for your interest in contributing! This document provides guidelines for contributing to agentcontract.
+Thank you for your interest in contributing! This document provides guidelines for contributing to the AgentSpec framework. Because AgentSpec operates on the ethos of rigid deterministic behavior, we prioritize robust assertions, exhaustive unit tests, and rigorous edge-case handling.
 
-## Development Setup
+## 🛠 Development Setup
 
-1. Fork and clone the repository:
+1. **Fork and clone the repository:**
 ```bash
-git clone https://github.com/yourusername/agentcontract.git
+git clone https://github.com/agentcontract/agentcontract.git
 cd agentcontract
 ```
 
-2. Create a virtual environment:
+2. **Create a virtual environment:**
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. Install in development mode:
+3. **Install in comprehensive development mode:**
 ```bash
 pip install -e ".[dev,all]"
 ```
 
-4. Install pre-commit hooks:
+4. **Install asynchronous testing modules (if missing):**
 ```bash
-pre-commit install
+pip install pytest-asyncio
 ```
 
-## Code Style
+---
 
-We use:
-- **ruff** for linting and import sorting
-- **black** for code formatting
-- **mypy** for type checking
+## 🎨 Code Style
 
-Run checks before committing:
+We mandate strict adherence to pythonic best practices and utilize the following automated toolchain:
+- **ruff** for high-performance linting and import sorting.
+- **black** for PEP8 standard code formatting.
+- **mypy** for strict static type checking.
+
+Always ensure the following passes before committing your branch:
 ```bash
 ruff check .
 black --check .
 mypy agentcontract/
 ```
 
-## Testing
+---
 
-Run the test suite:
+## 🧪 Testing
+
+Given that AgentSpec is a testing framework, we place heavy emphasis on testing the tester itself. All tests leverage `pytest`.
+
+*Run the test suite (synchronous and asynchronous):*
 ```bash
 pytest tests/ -v
 ```
 
-Run with coverage:
+*Run with explicit coverage analysis:*
 ```bash
 pytest tests/ --cov=agentcontract
 ```
 
-## Adding New Features
+---
 
-### Adding a New Adapter
+## 🔥 Adding New Features
 
-1. Create a new file in `agentcontract/adapters/`
-2. Inherit from `BaseAdapter`
-3. Implement the `run()` method
-4. Add tests in `tests/test_adapters/`
-5. Update documentation
+### 1. Adding a New Framework Adapter
 
-Example:
+1. Create a new file in `agentcontract/adapters/` (e.g., `gemini.py`)
+2. Inherit cleanly from `BaseAdapter`.
+3. Implement `run()` for synchronous workflows and `arun()` for asynchronous.
+4. Add verification tests in `tests/`.
+5. Update `README.md` and `getting-started.md` adapter sections.
+
+**Example implementation skeleton:**
 ```python
 from agentcontract.adapters.base import BaseAdapter
 
 class MyAdapter(BaseAdapter):
     def run(self, agent, input, context=None):
-        # Intercept and record tool calls
+        # Intercept and rigidly record tool calls locally
         self._interceptor.record("tool_name", args, result)
         return result
+        
+    async def arun(self, agent, input, context=None):
+        return await agent(...)
 ```
 
-### Adding New Assertions
+### 2. Adding New Assertions
 
-Add assertion methods to:
-- `AgentResult` for top-level assertions
-- `ToolAssertion` for tool-specific assertions
+Assertions are segmented into standalone handlers within `agentcontract/assertions/`.
 
-Always include:
-- Clear error messages with context
-- Proper type hints
-- Docstrings
-- Tests
+To add a new assertion metric:
+1. Define the boolean logic within the relevant assertion file (e.g. `agentcontract/assertions/count_assertions.py`).
+2. Add the tracking method to `AgentResult`, `ToolAssertion`, or `CountAssertion` in `result.py` wrapping the newly implemented standalone method.
+3. Throw rigorous exceptions on failure.
 
-## Pull Request Process
+**Always ensure your PRs include:**
+- Clear deterministic error messages (`ContractViolation`, `ArgMismatch`, etc.)
+- Explicit python generic type hints.
+- Extensive docstrings.
+- Testing proving both failure triggers and assertion successes.
+
+---
+
+## 📫 Pull Request Process
 
 1. **Create a branch**: `git checkout -b feature/my-feature`
-2. **Make your changes** with clear commit messages
-3. **Add tests** for new functionality
-4. **Update documentation** as needed
-5. **Run the test suite** to ensure nothing is broken
-6. **Submit a PR** with a clear description
+2. **Make your changes** with atomic, functional commits.
+3. **Add tests** for new functionality.
+4. **Update documentation** wherever applicable.
+5. **Run the test suite** locally.
+6. **Submit a PR** mapping back to the initial Issue (if applicable).
 
-## Commit Message Format
+### Commit Message Format
 
-Use conventional commits:
-- `feat: add new assertion type`
-- `fix: correct ordering bug`
-- `docs: update API reference`
-- `test: add chaos injector tests`
+Use classic conventional commits to keep traces clean:
+- `feat: add async chaos failure`
+- `fix: resolve multi-agent arg parsing`
+- `docs: update API pipeline docs`
+- `test: added rate-limit edge cases`
 
-## Code Review
+---
 
-All PRs require review. Address feedback promptly and maintain a respectful tone.
+## 📝 License
 
-## Questions?
-
-- Open an issue for bugs or feature requests
-- Start a discussion for questions
-- Join our community chat
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing to AgentSpec, you agree that your contributions will be explicitly licensed under the MIT License.

@@ -12,9 +12,10 @@ def assert_with_args(
     trace: AgentTrace,
     tool_name: str,
     expected_args: dict[str, Any],
+    agent_id: str | None = None,
 ) -> None:
     """Assert exact argument match for at least one call."""
-    calls = trace.get_calls(tool_name)
+    calls = trace.get_calls(tool_name, agent_id)
     for call in calls:
         if all(call.args.get(k) == v for k, v in expected_args.items()):
             return
@@ -29,9 +30,10 @@ def assert_with_args_containing(
     trace: AgentTrace,
     tool_name: str,
     expected_subset: dict[str, Any],
+    agent_id: str | None = None,
 ) -> None:
     """Assert that args contain expected values (subset match)."""
-    calls = trace.get_calls(tool_name)
+    calls = trace.get_calls(tool_name, agent_id)
     for call in calls:
         if all(_contains(call.args.get(k), v) for k, v in expected_subset.items()):
             return
@@ -46,9 +48,10 @@ def assert_with_args_matching(
     trace: AgentTrace,
     tool_name: str,
     patterns: dict[str, str],
+    agent_id: str | None = None,
 ) -> None:
     """Assert that string args match regex patterns."""
-    calls = trace.get_calls(tool_name)
+    calls = trace.get_calls(tool_name, agent_id)
     for call in calls:
         if all(_matches_regex(call.args.get(k), v) for k, v in patterns.items()):
             return
