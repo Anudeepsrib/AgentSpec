@@ -1,0 +1,1 @@
+An intelligent agent specification framework built with Python (84.6%), JavaScript (8%), CSS (7.2%), and HTML (0.2%). Focused on creating versatile solutions in agent technology and specifications.
