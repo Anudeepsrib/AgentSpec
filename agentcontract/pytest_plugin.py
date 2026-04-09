@@ -129,10 +129,19 @@ def pytest_runtest_makereport(item: Any, call: Any) -> None:
         name = getattr(item, "_contract_name", item.name)
         passed = call.excinfo is None
 
-        # Try to extract metrics from the result if available
+        # Extract metrics from AgentResult if the test stored one
         tool_calls = 0
         assertions = 0
         error_msg = None
+
+        # Try to get metrics from the test's return value or funcargs
+        if hasattr(item, "funcargs"):
+            for val in item.funcargs.values():
+                if hasattr(val, "trace") and hasattr(val, "_assertions_made"):
+                    # This is an AgentResult
+                    tool_calls = len(getattr(val.trace, "tool_calls", []))
+                    assertions = len(getattr(val, "_assertions_made", []))
+                    break
 
         if not passed and call.excinfo:
             error_msg = str(call.excinfo.value)

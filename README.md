@@ -15,7 +15,7 @@
 
 *Stop scoring agent output quality with "vibes". Start enforcing agent behavior with code.*
 
-[Documentation](#quick-start) • [Features](#key-features) • [Installation](#installation) • [Contributing](CONTRIBUTING.md)
+[Documentation](https://agentspec.dev) • [Features](#key-features) • [Installation](#installation) • [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -35,18 +35,20 @@ Think of it as:
 
 ---
 
-## ⚡️ Key Features (v0.2.0)
+## ⚡️ Key Features (v0.3.0)
 
 | Feature | Description |
 |:---|:---|
 | 🛡 **Deterministic Assertions** | Test tool executions, parameter accuracy, strict ordering, and thresholds with 100% determinism. |
-| ⏱ **Async & Sync Support** | Natively utilize `.arun()` with full compatibility for `pytest-asyncio` workflows. |
-| 👯‍♀️ **Multi-Agent Tracking** | Isolate concurrent interactions using specific `agent_id` tracking parameters stringently preventing cross-contamination. |
-| 🌩 **Advanced Chaos Injection** | Ensure resilience by simulating targeted failures, latency spikes, response formatting corruption, or random chaos. |
-| ⚡️ **Performance Constraints** | Define explicit bounds for full operational trajectory times (`assert_total_duration_under(ms)`) and singular tool executions (`within_ms(ms)`). |
-| 📸 **Trajectory Snapshots** | Capture "golden" paths as JSON profiles to rigidly lock regression behaviors. |
-| 💎 **Trace Visualizer UI** | Launch a beautiful premium local web dashboard to visually trace inputs, outputs, and JSON trajectories via `agentcontract ui`. |
-| 🔌 **Framework Agnostic** | Contains baked-in adapters for OpenAI, Anthropic, Langchain, and Custom frameworks. |
+| 🧪 **ContractSuites** | Group related contracts with shared configuration, sanitization rules, and batch execution. |
+| 🛡 **PII Sanitization** | Automatically redact sensitive tool arguments (e.g., passwords, keys) from traces for GDPR compliance. |
+| ⏱ **Async & Sync Support** | Native support for `.arun()` and `pytest-asyncio` workflows. |
+| 👯‍♀️ **Multi-Agent Tracking** | Isolate concurrent interactions using `agent_id` to prevent cross-contamination. |
+| 🌩 **Advanced Chaos Injection** | Simulate tool failures, latency spikes, response corruption, or random stochastic chaos. |
+| 📸 **Trajectory Snapshots** | Capture "golden" paths as JSON to lock down complex multi-step behaviors. |
+| 💎 **Trace Visualizer UI** | Beautiful local web dashboard to visually trace agent execution via `agentcontract ui`. |
+| 🔌 **Ecosystem Ready** | Native adapters for OpenAI, Anthropic, LangChain/LangGraph, and simple Custom adapters. |
+| 🚀 **CI Integration** | Specialized GitHub Actions and JSONL export for seamless CI/CD artifact collection. |
 
 ---
 
@@ -58,27 +60,19 @@ Think of it as:
 pip install agentcontract
 ```
 
-*For specific framework support:*
-```bash
-pip install agentcontract[openai]      # OpenAI support
-pip install agentcontract[anthropic]   # Anthropic support  
-pip install agentcontract[langchain]   # LangChain support
-pip install agentcontract[all]         # All adapters
-```
-
 ### Your First Contract Test
 
 ```python
 from agentcontract import contract, ContractRunner
 
 @contract("flight_booking")
-async def test_books_correct_flight():
-    # Supports asynchronous and synchronous execution
-    runner = ContractRunner(adapter="openai")
+def test_books_correct_flight():
+    # Sanitize sensitive data automatically
+    runner = ContractRunner(adapter="openai", sanitize_keys=["credit_card"])
     
-    result = await runner.arun(
-        agent=my_booking_async_agent,
-        input="Book me a flight to NYC next Tuesday"
+    result = runner.run(
+        agent=my_agent,
+        input="Book a flight to NYC"
     )
 
     # Deterministic behavior enforcement
@@ -87,32 +81,19 @@ async def test_books_correct_flight():
     result.must_call("book_flight").with_args_containing(destination="NYC")
     result.must_not_call("cancel_booking")
     
-    # Performance validation
-    result.assert_total_duration_under(ms=5000)
-    
-    # Lock down regression tests
-    result.snapshot() 
+    # Save a golden snapshot
+    result.snapshot("happy_path") 
 ```
 
-Run your tests beautifully from the CLI:
+### Run and Export Results
 
 ```bash
-agentcontract run tests/
-```
+# Run tests and export to JSONL for CI
+agentcontract run tests/ -o results.jsonl
 
-> [!TIP]
-> The resulting output maps exactly to the CI pipeline, delivering highly legible summaries directly tailored to Agent Trajectory validations.
-
-### Native Trace Visualizer
-
-AgentSpec includes a stunning built-in React web dashboard to visualize all your `.agentcontract/snapshots` beautifully.
-
-```bash
-# Boot the Visualizer Dashboard locally
+# Visualize traces locally
 agentcontract ui
 ```
-
-*This will automatically serve a local web dashboard providing graphical timelines of your agent traces, response payloads, and execution latency thresholds.*
 
 ---
 
@@ -150,50 +131,42 @@ result.tool_call_count("api_call").at_most(5)
 
 ## 🌪 Chaos Testing
 
-Production is messy. Tools timeout, APIs rate-limit, databases go down. Test agent resilience:
+Test how your agent handles real-world failures:
 
 ```python
 from agentcontract.chaos import ChaosInjector
 
 chaos = ChaosInjector()
-
-# Specific Targeted Chaos
 chaos.fail_tool("search_flights", after_calls=1, error="RateLimitError")
 chaos.slow_tool("payment_gateway", latency_ms=5000)
 
-# Random Stochastic Chaos
-chaos.random_failures(probability=0.1)
-
-# Enforce resilience testing!
-result = await runner.arun(agent=my_agent, input="Book flight", chaos=chaos)
-
-result.must_call("search_flights").at_least(2)  # Retry validation triggered by RateLimitError
+result = runner.run(agent=my_agent, input="Book flight", chaos=chaos)
+result.must_call("search_flights").at_least(2) # Verify retry logic
 ```
 
 ---
 
 ## 📈 Roadmap
 
-### [0.3.0] — Next Phase
-- Contract sharing and remote CI test registry
-- Integration with emerging complex agent orchestrators
-- Auto-generation of golden snapshots from live production logs
+### [0.4.0] — Policy Engine
+- Define global behavioral policies across all agents.
+- Drift detection: detect when agent behavior deviates from historical benchmarks.
+- OTLP export for distributed tracing integration.
 
 ### [1.0.0] — Horizon
-- Stable API guarantee
-- Enterprise telemetry endpoints
-- Expansive Plugin ecosystem
+- Stable API guarantee.
+- Enterprise telemetry endpoints.
+- Visual Contract Editor.
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ```bash
-# Clone and setup the DEV environment
-git clone https://github.com/agentcontract/agentcontract.git
-cd agentcontract
+git clone https://github.com/Anudeepsrib/AgentContract.git
+cd AgentContract
 pip install -e ".[dev,all]"
 pytest tests/
 ```
@@ -206,6 +179,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Built by Agents. For Agents.**
 
-[Documentation](docs/getting-started.md) • [Issue Tracker](https://github.com/agentcontract/agentcontract/issues) • [Discussions](https://github.com/agentcontract/agentcontract/discussions)
+[Documentation](https://agentspec.dev) • [Issue Tracker](https://github.com/Anudeepsrib/AgentContract/issues)
 
 </div>

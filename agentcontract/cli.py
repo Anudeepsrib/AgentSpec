@@ -11,11 +11,13 @@ import click
 from rich.console import Console
 from rich.panel import Panel
 
+from agentcontract import __version__
+
 console = Console()
 
 
 @click.group()
-@click.version_option(version="0.1.0", prog_name="agentcontract")
+@click.version_option(version=__version__, prog_name="agentcontract")
 def cli() -> None:
     """agentcontract — deterministic testing for AI agents."""
     pass
@@ -27,12 +29,16 @@ def cli() -> None:
 @click.option("--snapshot-update", is_flag=True, help="Update all snapshots")
 @click.option("-k", "--keyword", help="Only run tests matching keyword")
 @click.option("--adapter", type=click.Choice(["openai", "anthropic", "langchain"]), help="Default adapter")
+@click.option("--no-persist", is_flag=True, help="Disable run log persistence (for sensitive environments)")
+@click.option("-o", "--output", "output_path", help="Export results to JSONL file (for CI artifacts)")
 def run(
     test_path: str,
     verbose: bool,
     snapshot_update: bool,
     keyword: str | None,
     adapter: str | None,
+    no_persist: bool,
+    output_path: str | None,
 ) -> None:
     """Run agent contract tests.
 
@@ -56,6 +62,10 @@ def run(
     if adapter:
         os.environ["AGENTCONTRACT_ADAPTER"] = adapter
 
+    if no_persist:
+        os.environ["AGENTCONTRACT_NO_PERSIST"] = "1"
+        console.print("[dim]Run log persistence disabled[/dim]")
+
     # Add our plugin
     cmd.extend(["-p", "agentcontract.pytest_plugin"])
 
@@ -63,6 +73,19 @@ def run(
     console.print()
 
     result = subprocess.run(cmd, cwd=os.getcwd())
+
+    # Export results if --output specified
+    if output_path and not no_persist:
+        import shutil
+        from agentcontract.storage import RunLogger
+        logger = RunLogger()
+        logs = logger.list_logs()
+        if logs:
+            latest = logs[-1]
+            shutil.copy2(str(latest), output_path)
+            console.print(f"[green]Results exported to {output_path}[/green]")
+        else:
+            console.print("[yellow]No run logs to export[/yellow]")
 
     sys.exit(result.returncode)
 
@@ -152,35 +175,45 @@ def init(output_path: str) -> None:
     # Create example test file
     example_test = target / "tests" / "example_contract.py"
     if not example_test.exists():
-        example_test.write_text("""\"\"\"Example agent contract test.\"\"\"
+        example_test.write_text('''"""Example agent contract test — run with: agentcontract run"""
 
-import pytest
 from agentcontract import contract, ContractRunner
 
 
+def search_flights(destination: str) -> dict:
+    """Simulated search tool."""
+    return {"flights": [{"id": "FL001", "price": 299}]}
+
+
+def book_flight(flight_id: str) -> dict:
+    """Simulated booking tool."""
+    return {"booking_id": f"BK-{flight_id}", "status": "confirmed"}
+
+
 @contract("example_booking")
-def test_example_flight_booking():
-    \"\"\"Example test showing contract assertions.\"\"\"
-
-    def mock_agent(input_text: str, **kwargs) -> dict:
-        # Simulated agent behavior
-        return {
-            "tool_calls": [
-                {"name": "search_flights", "args": {"destination": "NYC"}},
-                {"name": "book_flight", "args": {"flight_id": "123"}},
-            ],
-            "output": "Flight booked successfully!"
-        }
-
+def test_flight_booking():
+    """A working contract test with real tool call interception."""
     runner = ContractRunner()
+
+    def mock_agent(input_text: str, interceptor=None, **kwargs):
+        # Wrap tools so calls are automatically recorded
+        wrapped_search = interceptor.wrap_tool(search_flights, "search_flights")
+        wrapped_book = interceptor.wrap_tool(book_flight, "book_flight")
+
+        # Agent logic
+        results = wrapped_search(destination="NYC")
+        booking = wrapped_book(flight_id="FL001")
+        return f"Booked {booking['booking_id']}"
+
     result = runner.run(agent=mock_agent, input="Book a flight to NYC")
 
-    # Assertions go here once you have real tool capture
-    # result.must_call("search_flights")
-    # result.must_call("book_flight").after("search_flights")
-
-    pass
-""")
+    # Deterministic assertions
+    result.must_call("search_flights")
+    result.must_call("book_flight").after("search_flights")
+    result.must_call("search_flights").with_args(destination="NYC")
+    result.must_not_call("cancel_booking")
+    result.tool_call_count("search_flights").exactly(1)
+''')
 
     # Create conftest.py
     conftest = target / "tests" / "conftest.py"
@@ -202,7 +235,8 @@ pytest_plugins = ["agentcontract.pytest_plugin"]
 
 @cli.command()
 @click.option("--port", default=8080, help="Port to serve the dashboard on")
-def ui(port: int) -> None:
+@click.option("--host", default="127.0.0.1", help="Host to bind to")
+def ui(port: int, host: str) -> None:
     """Launch the AgentSpec Trace Visualizer dashboard."""
     import http.server
     import socketserver
@@ -230,6 +264,7 @@ def ui(port: int) -> None:
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 self.end_headers()
                 
                 # Fetch snapshots
@@ -260,10 +295,10 @@ def ui(port: int) -> None:
     # To prevent 'Address already in use' errors
     socketserver.TCPServer.allow_reuse_address = True
     
-    with socketserver.TCPServer(("", port), DashboardHandler) as httpd:
+    with socketserver.TCPServer((host, port), DashboardHandler) as httpd:
         console.print(Panel(
             f"[bold green]AgentSpec Trace Visualizer[/bold green]\n\n"
-            f"🚀 Server running on [cyan]http://localhost:{port}[/cyan]\n"
+            f"🚀 Server running on [cyan]http://{host}:{port}[/cyan]\n"
             f"📂 Serving from [dim]{dist_dir}[/dim]\n\n"
             f"Press Ctrl+C to stop.",
             title="Dashboard",

@@ -131,19 +131,19 @@ class ToolAssertion:
         assert_with_args_matching(self._result.trace, self._tool_name, kwargs, self._agent_id)
         return self
 
-    def before(self, other_tool: str, other_agent_id: str | None = None) -> Self:
+    def before(self, other_tool: str, agent_id: str | None = None) -> Self:
         """Assert this tool was called before another."""
-        assert_before(self._result.trace, self._tool_name, other_tool, self._agent_id, other_agent_id)
+        assert_before(self._result.trace, self._tool_name, other_tool, self._agent_id, agent_id)
         return self
 
-    def after(self, other_tool: str, other_agent_id: str | None = None) -> Self:
+    def after(self, other_tool: str, agent_id: str | None = None) -> Self:
         """Assert this tool was called after another."""
-        assert_after(self._result.trace, self._tool_name, other_tool, self._agent_id, other_agent_id)
+        assert_after(self._result.trace, self._tool_name, other_tool, self._agent_id, agent_id)
         return self
 
-    def immediately_after(self, other_tool: str, other_agent_id: str | None = None) -> Self:
+    def immediately_after(self, other_tool: str, agent_id: str | None = None) -> Self:
         """Assert this tool was called immediately after another."""
-        assert_immediately_after(self._result.trace, self._tool_name, other_tool, self._agent_id, other_agent_id)
+        assert_immediately_after(self._result.trace, self._tool_name, other_tool, self._agent_id, agent_id)
         return self
 
     def exactly(self, n: int) -> Self:

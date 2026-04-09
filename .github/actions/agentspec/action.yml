@@ -1,0 +1,72 @@
+name: 'AgentSpec Contract Tests'
+description: 'Run AgentSpec contract tests and report results'
+branding:
+  icon: 'check-circle'
+  color: 'blue'
+
+inputs:
+  test-path:
+    description: 'Path to test files or directory'
+    required: false
+    default: 'tests/'
+  python-version:
+    description: 'Python version to use'
+    required: false
+    default: '3.11'
+  snapshot-mode:
+    description: 'Snapshot mode: verify or update'
+    required: false
+    default: 'verify'
+  fail-on-regression:
+    description: 'Fail the action if snapshot regressions are detected'
+    required: false
+    default: 'true'
+  extra-deps:
+    description: 'Extra dependency groups to install (e.g., "openai,langchain")'
+    required: false
+    default: ''
+  output-artifact:
+    description: 'Upload results as GitHub artifact'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install agentcontract
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        if [ -n "${{ inputs.extra-deps }}" ]; then
+          pip install "agentcontract[${{ inputs.extra-deps }}]"
+        else
+          pip install agentcontract
+        fi
+        # Install project dependencies if pyproject.toml exists
+        if [ -f "pyproject.toml" ]; then
+          pip install -e ".[dev]" 2>/dev/null || pip install -e . 2>/dev/null || true
+        fi
+
+    - name: Run contract tests
+      shell: bash
+      run: |
+        ARGS="${{ inputs.test-path }}"
+        if [ "${{ inputs.snapshot-mode }}" = "update" ]; then
+          ARGS="$ARGS --snapshot-update"
+        fi
+        agentcontract run $ARGS -o agentspec-results.jsonl -v
+      env:
+        AGENTCONTRACT_FAIL_ON_REGRESSION: ${{ inputs.fail-on-regression }}
+
+    - name: Upload results artifact
+      if: ${{ inputs.output-artifact == 'true' && always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: agentspec-results
+        path: agentspec-results.jsonl
+        if-no-files-found: ignore

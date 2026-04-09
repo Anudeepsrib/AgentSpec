@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentcontract"
-version = "0.2.0"
-description = "The first agent testing framework built around deterministic contracts, not vibes."
+version = "0.3.0"
+description = "Deterministic testing framework for AI agents"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
@@ -49,6 +49,7 @@ anthropic = ["anthropic>=0.18"]
 langchain = ["langchain>=0.1.0", "langchain-core>=0.1.0"]
 dev = [
     "pytest>=7.0",
+    "pytest-asyncio>=0.23.0",
     "pytest-cov>=4.0",
     "ruff>=0.1.0",
     "mypy>=1.0",

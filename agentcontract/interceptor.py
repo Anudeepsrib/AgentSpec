@@ -135,9 +135,16 @@ class AgentTrace:
 class TraceInterceptor:
     """Base class for intercepting tool calls from different frameworks."""
 
-    def __init__(self) -> None:
+    REDACTED = "[REDACTED]"
+
+    def __init__(
+        self,
+        *,
+        sanitize_keys: list[str] | None = None,
+    ) -> None:
         self.trace = AgentTrace()
         self._active: bool = False
+        self._sanitize_keys: set[str] = set(sanitize_keys or [])
 
     def start(self) -> None:
         """Start intercepting."""
@@ -151,6 +158,22 @@ class TraceInterceptor:
         if self.trace.final_output is None:
             self.trace.finish()
 
+    def _sanitize_args(self, args: dict[str, Any]) -> dict[str, Any]:
+        """Redact sensitive keys from tool call arguments.
+
+        Args:
+            args: Original tool call arguments.
+
+        Returns:
+            Copy of args with sensitive values replaced by ``[REDACTED]``.
+        """
+        if not self._sanitize_keys:
+            return args
+        return {
+            k: self.REDACTED if k in self._sanitize_keys else v
+            for k, v in args.items()
+        }
+
     def record(
         self,
         name: str,
@@ -162,7 +185,8 @@ class TraceInterceptor:
         """Record a tool call if active."""
         if not self._active:
             raise RuntimeError("Interceptor not started")
-        return self.trace.record_call(name, args, response, duration_ms, agent_id)
+        sanitized = self._sanitize_args(args)
+        return self.trace.record_call(name, sanitized, response, duration_ms, agent_id)
 
     def wrap_tool(
         self,

@@ -1,17 +1,40 @@
-"""LangChain adapter for tool call interception."""
+"""LangChain adapter for tool call interception.
+
+Uses LangChain's callback system to intercept tool calls. Works with
+both legacy ``AgentExecutor`` and modern LangGraph agents.
+
+The adapter provides an ``AgentSpecCallbackHandler`` that can also be used
+standalone without the adapter class.
+"""
 
 from __future__ import annotations
 
 import time
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from agentcontract.adapters.base import BaseAdapter
 
+if TYPE_CHECKING:
+    from agentcontract.interceptor import TraceInterceptor
 
-class InterceptingCallbackHandler:
-    """LangChain callback handler that records tool calls."""
 
-    def __init__(self, interceptor: Any) -> None:
+class AgentSpecCallbackHandler:
+    """LangChain callback handler that records tool calls to AgentSpec traces.
+
+    Can be used standalone::
+
+        from agentcontract.adapters.langchain import AgentSpecCallbackHandler
+
+        handler = AgentSpecCallbackHandler(interceptor)
+        agent.invoke({"input": "query"}, config={"callbacks": [handler]})
+
+    Or via the adapter::
+
+        runner = ContractRunner(adapter="langchain")
+        result = runner.run(agent=my_agent, input="query")
+    """
+
+    def __init__(self, interceptor: TraceInterceptor) -> None:
         self._interceptor = interceptor
         self._tool_starts: dict[str, float] = {}
 
@@ -19,31 +42,75 @@ class InterceptingCallbackHandler:
         self,
         serialized: dict[str, Any] | None = None,
         input_str: str = "",
+        *,
+        run_id: Any = None,
         **kwargs: Any,
     ) -> None:
-        """Record tool start."""
-        tool_name = serialized.get("name", "unknown") if serialized else "unknown"
-        self._tool_starts[tool_name] = time.time()
+        """Called when a tool starts execution."""
+        tool_name = "unknown"
+        if serialized:
+            tool_name = serialized.get("name", serialized.get("id", ["unknown"])[-1] if "id" in serialized else "unknown")
+
+        key = f"{tool_name}_{id(run_id) if run_id else time.time()}"
+        self._tool_starts[key] = time.time()
+        # Store the tool name mapping for lookup in on_tool_end
+        self._tool_starts[f"_name_{key}"] = tool_name
 
     def on_tool_end(
         self,
         output: Any,
-        serialized: dict[str, Any] | None = None,
+        *,
+        run_id: Any = None,
         **kwargs: Any,
     ) -> None:
-        """Record tool end."""
-        tool_name = serialized.get("name", "unknown") if serialized else "unknown"
-        start_time = self._tool_starts.pop(tool_name, None)
+        """Called when a tool finishes execution."""
+        # Find matching start entry
+        key = None
+        tool_name = "unknown"
+        for k in list(self._tool_starts.keys()):
+            if k.startswith("_name_"):
+                continue
+            if run_id and str(id(run_id)) in k:
+                key = k
+                tool_name = self._tool_starts.pop(f"_name_{k}", "unknown")
+                break
+
+        start_time = self._tool_starts.pop(key, None) if key else None
         duration = (time.time() - start_time) * 1000 if start_time else 0.0
 
-        # Extract input from serialized
-        args = serialized.get("args", {}) if serialized else {}
+        # Extract args from kwargs if available
+        args = kwargs.get("tool_input", {})
+        if isinstance(args, str):
+            args = {"input": args}
 
         self._interceptor.record(tool_name, args, output, duration)
 
+    def on_tool_error(
+        self,
+        error: BaseException,
+        *,
+        run_id: Any = None,
+        **kwargs: Any,
+    ) -> None:
+        """Called when a tool raises an error."""
+        # Clean up start entry
+        for k in list(self._tool_starts.keys()):
+            if not k.startswith("_name_") and run_id and str(id(run_id)) in k:
+                tool_name = self._tool_starts.pop(f"_name_{k}", "unknown")
+                start_time = self._tool_starts.pop(k, None)
+                duration = (time.time() - start_time) * 1000 if start_time else 0.0
+                self._interceptor.record(tool_name, {}, error, duration)
+                break
+
 
 class LangChainAdapter(BaseAdapter):
-    """Adapter for LangChain agents."""
+    """Adapter for LangChain / LangGraph agents.
+
+    Supports:
+    - ``AgentExecutor`` (legacy ``.run()`` / ``.invoke()``)
+    - LangGraph compiled graphs (``.invoke()`` / ``.ainvoke()``)
+    - Any callable that accepts a ``callbacks`` kwarg
+    """
 
     def run(
         self,
@@ -52,35 +119,69 @@ class LangChainAdapter(BaseAdapter):
         context: dict[str, Any] | None = None,
     ) -> Any:
         """Run a LangChain agent with interception."""
-        # Try to import langchain
-        try:
-            from langchain.callbacks.base import BaseCallbackHandler
-        except ImportError:
-            raise ImportError("langchain is required for LangChainAdapter")
+        callback = AgentSpecCallbackHandler(self._interceptor)
+        config = self._build_config(callback, context)
 
-        # Create callback handler
-        callback = InterceptingCallbackHandler(self._interceptor)
+        # Modern invoke() API (LangGraph / LCEL)
+        if hasattr(agent, "invoke"):
+            input_val = input if isinstance(input, dict) else {"input": input}
+            return agent.invoke(input_val, config=config)
 
-        # Build callbacks list
-        callbacks = [callback]
+        # Legacy run() API
+        if hasattr(agent, "run"):
+            if isinstance(input, dict):
+                return agent.run(**input, callbacks=config.get("callbacks", [callback]))
+            return agent.run(input, callbacks=config.get("callbacks", [callback]))
 
-        # Add context callbacks if present
-        if context and "callbacks" in context:
-            existing = context["callbacks"]
-            if isinstance(existing, list):
-                callbacks.extend(existing)
-            else:
-                callbacks.append(existing)
+        # Callable agent
+        if callable(agent):
+            if isinstance(input, dict):
+                return agent(interceptor=self._interceptor, **input, **(context or {}))
+            return agent(input, interceptor=self._interceptor, **(context or {}))
 
-        # Prepare run parameters
-        run_kwargs = {"callbacks": callbacks}
+        raise ValueError(f"Unsupported agent type for LangChain adapter: {type(agent)}")
+
+    async def arun(
+        self,
+        agent: Any,
+        input: str | dict[str, Any],
+        context: dict[str, Any] | None = None,
+    ) -> Any:
+        """Run an async LangChain agent with interception."""
+        callback = AgentSpecCallbackHandler(self._interceptor)
+        config = self._build_config(callback, context)
+
+        # Modern ainvoke() API
+        if hasattr(agent, "ainvoke"):
+            input_val = input if isinstance(input, dict) else {"input": input}
+            return await agent.ainvoke(input_val, config=config)
+
+        # Fallback to sync invoke in async context
+        if hasattr(agent, "invoke"):
+            input_val = input if isinstance(input, dict) else {"input": input}
+            return agent.invoke(input_val, config=config)
+
+        # Callable agent
+        if callable(agent):
+            if isinstance(input, dict):
+                return await agent(interceptor=self._interceptor, **input, **(context or {}))
+            return await agent(input, interceptor=self._interceptor, **(context or {}))
+
+        raise ValueError(f"Unsupported agent type for LangChain adapter: {type(agent)}")
+
+    @staticmethod
+    def _build_config(callback: AgentSpecCallbackHandler, context: dict[str, Any] | None) -> dict[str, Any]:
+        """Build LangChain config dict with callback handler merged in."""
+        config: dict[str, Any] = {"callbacks": [callback]}
+
         if context:
-            run_kwargs.update({k: v for k, v in context.items() if k != "callbacks"})
+            if "callbacks" in context:
+                existing = context["callbacks"]
+                if isinstance(existing, list):
+                    config["callbacks"].extend(existing)
+                else:
+                    config["callbacks"].append(existing)
+            # Merge non-callback context into config
+            config.update({k: v for k, v in context.items() if k != "callbacks"})
 
-        # Run the agent
-        if isinstance(input, dict):
-            result = agent.run(**input, **run_kwargs)
-        else:
-            result = agent.run(input, **run_kwargs)
-
-        return result
+        return config

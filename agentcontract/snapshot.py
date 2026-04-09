@@ -85,9 +85,13 @@ class SnapshotManager:
             )
 
     def _compute_diff(self, expected: dict, actual: dict) -> str | None:
-        """Compute differences between snapshots."""
-        expected_calls = expected.get("tool_calls", [])
-        actual_calls = actual.get("tool_calls", [])
+        """Compute differences between snapshots.
+
+        Strips non-deterministic fields (timestamp, duration_ms) before
+        comparison so that re-runs don't cause false mismatches.
+        """
+        expected_calls = self._strip_volatile(expected.get("tool_calls", []))
+        actual_calls = self._strip_volatile(actual.get("tool_calls", []))
 
         if expected_calls == actual_calls:
             return None
@@ -134,6 +138,19 @@ class SnapshotManager:
                 lines.append(f"    [red]args.{key}: {exp_val} -> {act_val}[/red]")
 
         return lines
+
+    @staticmethod
+    def _strip_volatile(calls: list[dict]) -> list[dict]:
+        """Strip non-deterministic fields from tool call dicts for comparison.
+
+        Fields like timestamp and duration_ms change on every run and should
+        not cause snapshot mismatches.
+        """
+        volatile_keys = {"timestamp", "duration_ms"}
+        return [
+            {k: v for k, v in call.items() if k not in volatile_keys}
+            for call in calls
+        ]
 
     def list_snapshots(self) -> list[Path]:
         """List all snapshots."""

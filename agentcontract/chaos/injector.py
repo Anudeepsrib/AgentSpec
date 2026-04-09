@@ -19,13 +19,18 @@ class ChaosRule:
     latency_ms: int = 0
     corrupt_response: Any = None
     corrupt_after_calls: int | None = None
+    max_failures: int | None = None
     call_count: int = field(default=0, repr=False)
+    failure_count: int = field(default=0, repr=False)
 
     def should_fail_now(self) -> bool:
         """Check if this rule should trigger a failure."""
         self.call_count += 1
         if self.failure_after_calls is not None:
-            return self.call_count > self.failure_after_calls
+            if self.call_count > self.failure_after_calls:
+                if self.max_failures is None or self.failure_count < self.max_failures:
+                    self.failure_count += 1
+                    return True
         return False
 
     def should_corrupt_now(self) -> bool:
@@ -69,6 +74,7 @@ class ChaosInjector:
         after_calls: int = 0,
         error: str = "RuntimeError",
         message: str = "Injected chaos failure",
+        max_failures: int | None = None,
     ) -> Self:
         """Configure a tool to fail after a certain number of calls.
 
@@ -77,6 +83,7 @@ class ChaosInjector:
             after_calls: Number of successful calls before failing
             error: Error type to raise (RateLimitError, TimeoutError, etc.)
             message: Error message
+            max_failures: Maximum number of times to fail (transient failure)
 
         Returns:
             Self for chaining
@@ -86,6 +93,7 @@ class ChaosInjector:
             failure_after_calls=after_calls,
             error_type=error,
             error_message=message,
+            max_failures=max_failures,
         )
         return self
 
