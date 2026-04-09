@@ -1,9 +1,8 @@
 """Example: Testing an OpenAI-based flight booking agent with agentspec."""
 
-import json
 from typing import Any
 
-from agentspec import contract, ContractRunner
+from agentspec import ContractRunner, contract
 from agentspec.chaos import ChaosInjector
 
 

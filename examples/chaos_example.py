@@ -11,7 +11,8 @@ Test: pytest examples/chaos_example.py -v
 """
 
 import time
-from agentspec import contract, ContractRunner
+
+from agentspec import ContractRunner, contract
 from agentspec.chaos import ChaosInjector
 
 # ── Simulated tools ─────────────────────────────────────────────────────────
@@ -66,7 +67,7 @@ def test_agent_retries_on_failure():
     chaos = ChaosInjector()
     # Fail the first search call, but only ONCE (transient)
     chaos.fail_tool("search_products", after_calls=0, error="RateLimitError", max_failures=1)
-    
+
     runner = ContractRunner()
     result = runner.run(agent=resilient_agent, input="laptop", chaos=chaos)
 
@@ -74,7 +75,7 @@ def test_agent_retries_on_failure():
     # Should have called search at least twice (initial + 1 retry)
     result.tool_call_count("search_products").at_least(2)
     result.must_call("process_payment")
-    
+
     print("[PASS] test_agent_retries_on_failure")
 
 @contract("performance_under_latency")
@@ -82,14 +83,14 @@ def test_agent_performance_under_load():
     """Test: Agent flow should complete even if payment is slow."""
     chaos = ChaosInjector()
     chaos.slow_tool("process_payment", latency_ms=1000)
-    
+
     runner = ContractRunner()
     result = runner.run(agent=resilient_agent, input="laptop", chaos=chaos)
 
     # Assertions
     result.assert_completed_in(5) # Still finish within 5s despite 1s delay
     result.must_call("process_payment")
-    
+
     print("[PASS] test_agent_performance_under_load")
 
 @contract("handling_corrupt_data")
@@ -97,7 +98,7 @@ def test_agent_handles_bad_responses():
     """Test: Agent should not crash if search returns garbage."""
     chaos = ChaosInjector()
     chaos.corrupt_tool_response("search_products", response={"error": "trash"}, after_calls=0)
-    
+
     runner = ContractRunner()
     # This might fail the agent logic, but the contract ensures it handles the response
     try:
@@ -105,7 +106,7 @@ def test_agent_handles_bad_responses():
         result.must_call("search_products")
     except Exception as e:
         print(f"  [System] Agent crashed as expected or handled improperly: {e}")
-    
+
     print("[PASS] test_agent_handles_bad_responses")
 
 if __name__ == "__main__":

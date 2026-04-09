@@ -10,8 +10,7 @@ Or with pytest:
     pytest examples/quickstart.py -v
 """
 
-from agentspec import contract, ContractRunner, ContractSuite
-
+from agentspec import ContractRunner, ContractSuite, contract
 
 # ── Step 1: Define your tools ───────────────────────────────────────────────
 # These are the tools your agent calls. In production, they'd hit real APIs.

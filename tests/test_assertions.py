@@ -2,13 +2,13 @@
 
 import pytest
 
-from agentspec.interceptor import AgentTrace
-from agentspec.result import AgentResult
 from agentspec.exceptions import (
-    OrderViolation,
     ArgMismatch,
     CountMismatch,
+    OrderViolation,
 )
+from agentspec.interceptor import AgentTrace
+from agentspec.result import AgentResult
 
 
 class TestOrderAssertions:

@@ -1,14 +1,15 @@
 """Tests for the core contract system."""
 
 import pytest
-from agentspec import contract, ContractRunner, AgentResult
+
+from agentspec import AgentResult, ContractRunner, contract
+from agentspec.exceptions import ToolCalledUnexpectedly, ToolNotCalled
 from agentspec.interceptor import AgentTrace
-from agentspec.exceptions import ToolNotCalled, ToolCalledUnexpectedly
 
 
 def test_contract_runner_creates_result() -> None:
     """Test that ContractRunner creates AgentResult."""
-    runner = ContractRunner()
+    ContractRunner()
     trace = AgentTrace()
 
     # Simulate some calls
@@ -23,7 +24,7 @@ def test_contract_runner_creates_result() -> None:
 
 def test_must_call_passes_when_tool_called() -> None:
     """Test must_call passes when tool was called."""
-    runner = ContractRunner()
+    ContractRunner()
     trace = AgentTrace()
     trace.record_call("search_flights", {"destination": "NYC"})
 
@@ -36,7 +37,7 @@ def test_must_call_passes_when_tool_called() -> None:
 
 def test_must_call_fails_when_tool_not_called() -> None:
     """Test must_call fails when tool was not called."""
-    runner = ContractRunner()
+    ContractRunner()
     trace = AgentTrace()
 
     result = AgentResult(trace)

@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import random
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
+
+from typing_extensions import Self
 
 
 @dataclass
@@ -26,11 +29,13 @@ class ChaosRule:
     def should_fail_now(self) -> bool:
         """Check if this rule should trigger a failure."""
         self.call_count += 1
-        if self.failure_after_calls is not None:
-            if self.call_count > self.failure_after_calls:
-                if self.max_failures is None or self.failure_count < self.max_failures:
-                    self.failure_count += 1
-                    return True
+        if (
+            self.failure_after_calls is not None
+            and self.call_count > self.failure_after_calls
+            and (self.max_failures is None or self.failure_count < self.max_failures)
+        ):
+            self.failure_count += 1
+            return True
         return False
 
     def should_corrupt_now(self) -> bool:

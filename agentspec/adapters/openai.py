@@ -51,7 +51,6 @@ class OpenAIAdapter(BaseAdapter):
             """Patched create method that intercepts tool calls."""
             # Patch tools if present
             tools = kwargs.get("tools", [])
-            original_tools = {}
 
             for tool in tools:
                 if isinstance(tool, dict) and "function" in tool:

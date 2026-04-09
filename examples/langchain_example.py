@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from agentspec import contract, ContractRunner
+from agentspec import ContractRunner, contract
 from agentspec.chaos import ChaosInjector
 
 
@@ -153,7 +153,7 @@ def test_handles_db_timeout() -> None:
     chaos.fail_tool("lookup_customer", after_calls=0, error="TimeoutError")
 
     # Real agent would retry; this tests the chaos system
-    result = runner.run(
+    runner.run(
         agent=agent.run,
         input="Check my order status",
         chaos=chaos

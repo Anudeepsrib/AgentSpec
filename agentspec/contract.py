@@ -4,14 +4,15 @@ from __future__ import annotations
 
 import functools
 import inspect
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
+from agentspec.adapters.base import BaseAdapter
+from agentspec.exceptions import ContractViolation
 from agentspec.interceptor import AgentTrace, TraceInterceptor
 from agentspec.result import AgentResult
 from agentspec.snapshot import SnapshotManager
 from agentspec.storage import RunLogger
-from agentspec.adapters.base import BaseAdapter
-from agentspec.exceptions import ContractViolation
 
 
 class ContractRunner:
@@ -153,7 +154,6 @@ class ContractRunner:
         Injects the chaos instance so that tools wrapped via
         runner.wrap_tools() will have chaos applied.
         """
-        interceptor = self._interceptor
 
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             kwargs.setdefault("chaos", chaos)
@@ -247,7 +247,7 @@ def contract(name: str | None = None) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Create a snapshot manager for this test
-            snapshot_mgr = SnapshotManager()
+            SnapshotManager()
 
             # Run the test function
             try:

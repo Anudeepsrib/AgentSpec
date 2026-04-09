@@ -1,9 +1,9 @@
 """Tests for ChaosInjector."""
 
-import pytest
-import time
 
-from agentspec.chaos import ChaosInjector, ChaosRule
+import pytest
+
+from agentspec.chaos import ChaosInjector
 from agentspec.chaos.injector import RateLimitError
 
 

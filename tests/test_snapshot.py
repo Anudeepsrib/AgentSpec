@@ -2,13 +2,12 @@
 
 import json
 import tempfile
-from pathlib import Path
 
 import pytest
 
+from agentspec.exceptions import SnapshotMismatch
 from agentspec.interceptor import AgentTrace
 from agentspec.snapshot import SnapshotManager
-from agentspec.exceptions import SnapshotMismatch
 
 
 def test_snapshot_manager_saves_trace() -> None:

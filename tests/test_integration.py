@@ -6,13 +6,9 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import pytest
-
 from agentspec import ContractRunner, contract
-from agentspec.interceptor import TraceInterceptor, AgentTrace
+from agentspec.interceptor import AgentTrace, TraceInterceptor
 from agentspec.storage import RunLogger
-from agentspec.snapshot import SnapshotManager
-
 
 # ── RunLogger Tests ──────────────────────────────────────────────────────────
 

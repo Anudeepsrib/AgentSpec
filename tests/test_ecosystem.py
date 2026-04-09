@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-import time
-from typing import Any
 from unittest.mock import MagicMock
 
-import pytest
-
-from agentspec import ContractRunner, ContractSuite
-from agentspec.interceptor import TraceInterceptor
+from agentspec import ContractSuite
 from agentspec.adapters.anthropic import AnthropicAdapter
-from agentspec.adapters.langchain import LangChainAdapter, AgentSpecCallbackHandler
-
+from agentspec.adapters.langchain import AgentSpecCallbackHandler, LangChainAdapter
+from agentspec.interceptor import TraceInterceptor
 
 # ── Anthropic Adapter Tests ─────────────────────────────────────────────────
 

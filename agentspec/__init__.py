@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-from importlib.metadata import version, PackageNotFoundError
+from importlib.metadata import PackageNotFoundError, version
 
-from agentspec.contract import contract, ContractRunner, ContractSuite
-from agentspec.result import AgentResult, ToolAssertion, CountAssertion
-from agentspec.storage import RunLogger
+from agentspec.contract import ContractRunner, ContractSuite, contract
 from agentspec.exceptions import (
-    ContractViolation,
-    SnapshotMismatch,
-    ToolNotCalled,
-    ToolCalledUnexpectedly,
-    OrderViolation,
     ArgMismatch,
+    ContractViolation,
+    OrderViolation,
+    SnapshotMismatch,
+    ToolCalledUnexpectedly,
+    ToolNotCalled,
 )
+from agentspec.result import AgentResult, CountAssertion, ToolAssertion
+from agentspec.storage import RunLogger
 
 try:
     __version__ = version("agentcontract")

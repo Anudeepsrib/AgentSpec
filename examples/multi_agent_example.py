@@ -9,8 +9,7 @@ Run:  python examples/multi_agent_example.py
 Test: pytest examples/multi_agent_example.py -v
 """
 
-from agentspec import contract, ContractRunner, ContractSuite
-
+from agentspec import ContractRunner, ContractSuite, contract
 
 # ── Simulated multi-agent system ────────────────────────────────────────────
 
@@ -45,7 +44,7 @@ def executor_agent(plan: dict, interceptor=None, **kwargs):
         "book_flight",
     )
 
-    flights = search(q="NYC")
+    search(q="NYC")
     is_valid = validate(fid="FL1")
     if is_valid["valid"]:
         booking = book(fid="FL1")

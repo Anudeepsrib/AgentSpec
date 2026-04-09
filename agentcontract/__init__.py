@@ -2,6 +2,7 @@
 # Deprecated: this package has been renamed to agentspec.
 # This shim exists for backward compatibility only.
 import warnings
+
 warnings.warn(
     "Importing from 'agentcontract' is deprecated. "
     "Use 'from agentspec import ...' instead.",

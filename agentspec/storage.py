@@ -15,7 +15,6 @@ Usage:
 from __future__ import annotations
 
 import json
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -105,10 +104,7 @@ class RunLogger:
         Returns:
             List of log entry dicts.
         """
-        if date:
-            path = self.runs_dir / f"runs_{date}.jsonl"
-        else:
-            path = self._current_log_path()
+        path = self.runs_dir / f"runs_{date}.jsonl" if date else self._current_log_path()
 
         if not path.exists():
             return []

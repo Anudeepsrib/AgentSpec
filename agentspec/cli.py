@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
-from typing import Any
 
 import click
 from rich.console import Console
@@ -77,6 +76,7 @@ def run(
     # Export results if --output specified
     if output_path and not no_persist:
         import shutil
+
         from agentspec.storage import RunLogger
         logger = RunLogger()
         logs = logger.list_logs()
@@ -239,14 +239,15 @@ pytest_plugins = ["agentspec.pytest_plugin"]
 def ui(port: int, host: str) -> None:
     """Launch the AgentSpec Trace Visualizer dashboard."""
     import http.server
-    import socketserver
     import json
+    import socketserver
+
     from agentspec.snapshot import SnapshotManager
-    
+
     # Path to dashboard build
     local_dist = Path(__file__).parent.parent / "dashboard" / "dist"
     packaged_dist = Path(__file__).parent / "ui_dist"
-    
+
     if packaged_dist.exists():
         dist_dir = packaged_dist
     elif local_dist.exists():
@@ -254,11 +255,11 @@ def ui(port: int, host: str) -> None:
     else:
         console.print("[red]Error: Dashboard assets not found. Please build the dashboard.[/red]")
         sys.exit(1)
-        
+
     class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=str(dist_dir), **kwargs)
-            
+
         def do_GET(self):
             if self.path == '/api/snapshots':
                 self.send_response(200)
@@ -266,13 +267,13 @@ def ui(port: int, host: str) -> None:
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 self.end_headers()
-                
+
                 # Fetch snapshots
                 mgr = SnapshotManager()
                 snaps = []
                 for snap_path in mgr.list_snapshots():
                     try:
-                        with open(snap_path, 'r', encoding='utf-8') as f:
+                        with open(snap_path, encoding='utf-8') as f:
                             data = json.load(f)
                             snaps.append({
                                 'id': snap_path.stem,
@@ -283,18 +284,18 @@ def ui(port: int, host: str) -> None:
                             })
                     except Exception:
                         pass
-                        
+
                 # Sort by start_time descending
                 snaps.sort(key=lambda x: x.get('trace', {}).get('start_time', 0), reverse=True)
-                
+
                 self.wfile.write(json.dumps(snaps).encode())
                 return
-                
+
             return super().do_GET()
-            
+
     # To prevent 'Address already in use' errors
     socketserver.TCPServer.allow_reuse_address = True
-    
+
     with socketserver.TCPServer((host, port), DashboardHandler) as httpd:
         console.print(Panel(
             f"[bold green]AgentSpec Trace Visualizer[/bold green]\n\n"

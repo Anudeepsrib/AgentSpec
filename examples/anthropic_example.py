@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from agentspec import contract, ContractRunner
+from agentspec import ContractRunner, contract
 
 
 class ResearchAgent:

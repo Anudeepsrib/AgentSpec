@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
+import pytest
 from rich.console import Console
 from rich.table import Table
-from rich.text import Text
 
 from agentspec.contract import ContractRunner
 from agentspec.interceptor import AgentTrace

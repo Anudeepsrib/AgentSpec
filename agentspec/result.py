@@ -3,25 +3,27 @@
 from __future__ import annotations
 
 import re
+import time
 from typing import Any, Self
 
-import time
-
-from agentspec.interceptor import AgentTrace, ToolCall
-from agentspec.snapshot import SnapshotManager
-from agentspec.exceptions import (
-    ToolNotCalled,
-    ToolCalledUnexpectedly,
-    OrderViolation,
-    ArgMismatch,
-    CountMismatch,
-    ContractViolation,
+from agentspec.assertions.arg_assertions import (
+    assert_with_args,
+    assert_with_args_containing,
+    assert_with_args_matching,
 )
-from agentspec.assertions.arg_assertions import assert_with_args, assert_with_args_containing, assert_with_args_matching
 from agentspec.assertions.call_assertions import assert_must_call, assert_must_not_call
-from agentspec.assertions.count_assertions import assert_exactly, assert_at_least, assert_at_most
-from agentspec.assertions.order_assertions import assert_before, assert_after, assert_immediately_after
-
+from agentspec.assertions.count_assertions import assert_at_least, assert_at_most, assert_exactly
+from agentspec.assertions.order_assertions import (
+    assert_after,
+    assert_before,
+    assert_immediately_after,
+)
+from agentspec.exceptions import (
+    ContractViolation,
+    ToolNotCalled,
+)
+from agentspec.interceptor import AgentTrace
+from agentspec.snapshot import SnapshotManager
 
 
 class AgentResult:
@@ -95,7 +97,7 @@ class AgentResult:
             total_time = (time.time() - self.trace.start_time) * 1000
         else:
             total_time = (self.trace.end_time - self.trace.start_time) * 1000
-        
+
         if total_time > ms:
             raise ContractViolation(
                 f"Agent took {total_time:.2f}ms, exceeding limit of {ms}ms",
@@ -166,7 +168,7 @@ class ToolAssertion:
         calls = self._result.trace.get_calls(self._tool_name, self._agent_id)
         if not calls:
             raise ToolNotCalled(f"Tool '{self._tool_name}' was not called")
-        
+
         if not any(c.duration_ms <= ms for c in calls):
             durations = [c.duration_ms for c in calls]
             min_duration = min(durations)

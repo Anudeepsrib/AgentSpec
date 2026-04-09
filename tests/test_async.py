@@ -1,9 +1,10 @@
 import asyncio
-import pytest
 from typing import Any
 
-from agentspec.contract import contract, ContractRunner
-from agentspec.exceptions import ToolNotCalled
+import pytest
+
+from agentspec.contract import ContractRunner, contract
+
 
 async def async_tool(x: int) -> int:
     await asyncio.sleep(0.01)
@@ -24,7 +25,7 @@ async def my_async_agent(input: str, interceptor: Any = None) -> str:
 async def test_async_agent_execution():
     runner = ContractRunner()
     result = await runner.arun(my_async_agent, "Do it")
-    
+
     result.must_call("async_tool").exactly(2)
     result.must_call("async_tool").with_args(x=5)
     result.must_call("async_tool").with_args(x=10)

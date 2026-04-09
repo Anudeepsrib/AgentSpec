@@ -1,8 +1,8 @@
 """Standalone order assertion functions."""
 
 
-from agentspec.interceptor import AgentTrace
 from agentspec.exceptions import OrderViolation
+from agentspec.interceptor import AgentTrace
 
 
 def assert_before(trace: AgentTrace, tool: str, before_tool: str,
