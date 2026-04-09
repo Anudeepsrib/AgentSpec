@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 import time
 from typing import Any
+
 from typing_extensions import Self
 
 from agentspec.assertions.arg_assertions import (
