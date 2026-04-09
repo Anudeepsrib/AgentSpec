@@ -1,6 +1,5 @@
 """Standalone call assertion functions."""
 
-
 from agentspec.exceptions import ToolCalledUnexpectedly, ToolNotCalled
 from agentspec.interceptor import AgentTrace
 

@@ -76,6 +76,7 @@ class OpenAIAdapter(BaseAdapter):
                                 name = getattr(func, "name", "unknown")
                                 try:
                                     import json
+
                                     args = json.loads(getattr(func, "arguments", "{}"))
                                 except json.JSONDecodeError:
                                     args = {}
@@ -169,6 +170,7 @@ class OpenAIAdapter(BaseAdapter):
                                 name = getattr(func, "name", "unknown")
                                 try:
                                     import json
+
                                     args_dict = json.loads(getattr(func, "arguments", "{}"))
                                 except json.JSONDecodeError:
                                     args_dict = {}

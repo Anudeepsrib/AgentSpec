@@ -75,10 +75,7 @@ def test_books_correct_flight() -> None:
     agent = FlightBookingAgent()
     runner = ContractRunner()
 
-    result = runner.run(
-        agent=agent.run,
-        input="Book me a flight to NYC next Tuesday"
-    )
+    result = runner.run(agent=agent.run, input="Book me a flight to NYC next Tuesday")
 
     # Assert on the execution
     result.must_call("search_flights")
@@ -98,11 +95,7 @@ def test_handles_tool_failure() -> None:
     chaos.fail_tool("search_flights", after_calls=1, error="RateLimitError")
 
     # This would be called with retry logic in a real agent
-    result = runner.run(
-        agent=agent.run,
-        input="Book me a flight to NYC",
-        chaos=chaos
-    )
+    result = runner.run(agent=agent.run, input="Book me a flight to NYC", chaos=chaos)
 
     # Agent should still try to complete
     result.must_call("search_flights")
@@ -114,10 +107,7 @@ def test_booking_matches_snapshot() -> None:
     agent = FlightBookingAgent()
     runner = ContractRunner()
 
-    result = runner.run(
-        agent=agent.run,
-        input="Book me a flight to NYC"
-    )
+    result = runner.run(agent=agent.run, input="Book me a flight to NYC")
 
     # Snapshot the full trajectory
     result.snapshot("flight_booking_flow")

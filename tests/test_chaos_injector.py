@@ -10,8 +10,10 @@ from agentspec.contract import ContractRunner
 def normal_tool(x: int) -> int:
     return x * 2
 
+
 async def async_tool(x: int) -> int:
     return x * 2
+
 
 def my_agent(input: str, interceptor: Any = None, chaos: Any = None) -> str:
     tool_to_wrap = chaos.apply("normal_tool", normal_tool) if chaos else normal_tool
@@ -24,6 +26,7 @@ def my_agent(input: str, interceptor: Any = None, chaos: Any = None) -> str:
         wrapped(x=10)
     return "Done"
 
+
 async def my_async_agent(input: str, interceptor: Any = None, chaos: Any = None) -> str:
     tool_to_wrap = chaos.apply_async("async_tool", async_tool) if chaos else async_tool
     wrapped = interceptor.wrap_tool_async(tool_to_wrap, "async_tool")
@@ -35,9 +38,10 @@ async def my_async_agent(input: str, interceptor: Any = None, chaos: Any = None)
         await wrapped(x=10)
     return "Done"
 
+
 def test_chaos_random_failures():
     injector = ChaosInjector(seed=42)
-    injector.random_failures(probability=1.0) # Always fail
+    injector.random_failures(probability=1.0)  # Always fail
 
     runner = ContractRunner()
     result = runner.run(my_agent, "Do it", context={"chaos": injector})
@@ -47,6 +51,7 @@ def test_chaos_random_failures():
     assert result.trace.count_calls("normal_tool") == 2
     for call in result.trace.tool_calls:
         assert isinstance(call.response, RuntimeError)
+
 
 @pytest.mark.asyncio
 async def test_chaos_async():

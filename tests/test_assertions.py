@@ -103,7 +103,9 @@ class TestArgAssertions:
     def test_with_args_containing_subset_match(self) -> None:
         """Test with_args_containing() with subset."""
         trace = AgentTrace()
-        trace.record_call("search_flights", {"destination": "NYC", "date": "2024-01-01", "passengers": 2})
+        trace.record_call(
+            "search_flights", {"destination": "NYC", "date": "2024-01-01", "passengers": 2}
+        )
 
         result = AgentResult(trace)
         result.must_call("search_flights").with_args_containing(destination="NYC")

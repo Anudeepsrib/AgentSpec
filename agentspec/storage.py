@@ -84,9 +84,7 @@ class RunLogger:
             "trace": trace.to_dict(),
             "tool_count": len(trace.tool_calls),
             "duration_ms": (
-                (trace.end_time - trace.start_time) * 1000
-                if trace.end_time is not None
-                else None
+                (trace.end_time - trace.start_time) * 1000 if trace.end_time is not None else None
             ),
         }
 

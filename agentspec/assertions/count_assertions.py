@@ -1,6 +1,5 @@
 """Standalone count assertion functions."""
 
-
 from agentspec.exceptions import CountMismatch
 from agentspec.interceptor import AgentTrace
 

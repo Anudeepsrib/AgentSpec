@@ -146,10 +146,7 @@ class SnapshotManager:
         not cause snapshot mismatches.
         """
         volatile_keys = {"timestamp", "duration_ms"}
-        return [
-            {k: v for k, v in call.items() if k not in volatile_keys}
-            for call in calls
-        ]
+        return [{k: v for k, v in call.items() if k not in volatile_keys} for call in calls]
 
     def list_snapshots(self) -> list[Path]:
         """List all snapshots."""
@@ -180,4 +177,6 @@ def print_snapshot_diff(mismatch: SnapshotMismatch) -> None:
     else:
         console.print("[dim]No detailed diff available[/dim]")
 
-    console.print(f"\n[dim]Expected {len(mismatch.expected)} calls, got {len(mismatch.actual)}[/dim]")
+    console.print(
+        f"\n[dim]Expected {len(mismatch.expected)} calls, got {len(mismatch.actual)}[/dim]"
+    )

@@ -49,7 +49,9 @@ class AgentSpecCallbackHandler:
         """Called when a tool starts execution."""
         tool_name = "unknown"
         if serialized:
-            tool_name = serialized.get("name", serialized.get("id", ["unknown"])[-1] if "id" in serialized else "unknown")
+            tool_name = serialized.get(
+                "name", serialized.get("id", ["unknown"])[-1] if "id" in serialized else "unknown"
+            )
 
         key = f"{tool_name}_{id(run_id) if run_id else time.time()}"
         self._tool_starts[key] = time.time()
@@ -170,7 +172,9 @@ class LangChainAdapter(BaseAdapter):
         raise ValueError(f"Unsupported agent type for LangChain adapter: {type(agent)}")
 
     @staticmethod
-    def _build_config(callback: AgentSpecCallbackHandler, context: dict[str, Any] | None) -> dict[str, Any]:
+    def _build_config(
+        callback: AgentSpecCallbackHandler, context: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """Build LangChain config dict with callback handler merged in."""
         config: dict[str, Any] = {"callbacks": [callback]}
 

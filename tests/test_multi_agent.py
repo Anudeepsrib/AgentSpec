@@ -6,8 +6,10 @@ from agentspec.contract import ContractRunner
 def tool_a(x: int) -> int:
     return x + 1
 
+
 def tool_b(y: int) -> int:
     return y * 2
+
 
 def my_multi_agent(input: str, interceptor: Any = None) -> str:
     # Agent 1 calls tool_a
@@ -23,6 +25,7 @@ def my_multi_agent(input: str, interceptor: Any = None) -> str:
     wrapped_b_for_1(y=3)
 
     return "Done"
+
 
 def test_multi_agent_execution():
     runner = ContractRunner()

@@ -129,7 +129,9 @@ class TestSanitization:
         )
 
         def agent(input_text, interceptor=None, **kwargs):
-            interceptor.record("call_api", {"url": "https://api.example.com", "api_key": "sk-abc123"})
+            interceptor.record(
+                "call_api", {"url": "https://api.example.com", "api_key": "sk-abc123"}
+            )
             return "ok"
 
         result = runner.run(agent=agent, input="test")
@@ -194,6 +196,7 @@ class TestFullLifecycle:
 
     def test_snapshot_comparison_passes_on_identical_run(self) -> None:
         """Two identical runs should produce matching snapshots."""
+
         def make_runner():
             return ContractRunner(
                 snapshot_dir=self.snapshot_dir,

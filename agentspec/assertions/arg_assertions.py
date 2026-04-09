@@ -1,6 +1,5 @@
 """Standalone argument assertion functions."""
 
-
 import re
 from typing import Any
 

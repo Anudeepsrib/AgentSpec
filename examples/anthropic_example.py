@@ -62,8 +62,7 @@ def test_research_agent_executes_full_pipeline() -> None:
     runner = ContractRunner()
 
     result = runner.run(
-        agent=agent.run,
-        input="What are the latest developments in quantum computing?"
+        agent=agent.run, input="What are the latest developments in quantum computing?"
     )
 
     # Verify the research pipeline
@@ -97,10 +96,7 @@ def test_research_passes_correct_arguments() -> None:
     agent = ResearchAgent()
     runner = ContractRunner()
 
-    result = runner.run(
-        agent=agent.run,
-        input="quantum computing developments"
-    )
+    result = runner.run(agent=agent.run, input="quantum computing developments")
 
     # Check web search got the query
     result.must_call("web_search").with_args_containing(query="quantum computing")

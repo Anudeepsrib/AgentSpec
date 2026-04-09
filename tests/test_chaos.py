@@ -1,6 +1,5 @@
 """Tests for ChaosInjector."""
 
-
 import pytest
 
 from agentspec.chaos import ChaosInjector

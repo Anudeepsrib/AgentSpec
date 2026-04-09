@@ -77,7 +77,9 @@ class AgentTrace:
         self.end_time = time.time()
         self.final_output = output
 
-    def get_calls(self, tool_name: str | None = None, agent_id: str | None = None) -> list[ToolCall]:
+    def get_calls(
+        self, tool_name: str | None = None, agent_id: str | None = None
+    ) -> list[ToolCall]:
         """Get all calls, optionally filtered by name and agent_id."""
         calls = self.tool_calls
         if tool_name is not None:
@@ -169,10 +171,7 @@ class TraceInterceptor:
         """
         if not self._sanitize_keys:
             return args
-        return {
-            k: self.REDACTED if k in self._sanitize_keys else v
-            for k, v in args.items()
-        }
+        return {k: self.REDACTED if k in self._sanitize_keys else v for k, v in args.items()}
 
     def record(
         self,

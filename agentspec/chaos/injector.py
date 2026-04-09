@@ -60,6 +60,7 @@ class ChaosRule:
 
 class RateLimitError(Exception):
     """Simulated rate limit error."""
+
     pass
 
 
@@ -190,6 +191,7 @@ class ChaosInjector:
     def apply_async(self, tool_name: str, original_func: Callable[..., Any]) -> Callable[..., Any]:
         """Wrap an async tool function with chaos injection."""
         import asyncio
+
         rule = self._rules.get(tool_name)
 
         async def wrapper(*args: Any, **kwargs: Any) -> Any:

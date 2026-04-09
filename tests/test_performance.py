@@ -11,10 +11,12 @@ def slow_tool(t: float) -> str:
     time.sleep(t)
     return "Done"
 
+
 def agent_with_slow_tool(input: float, interceptor: Any = None) -> str:
     wrapped = interceptor.wrap_tool(slow_tool, "slow_tool")
     wrapped(t=input)
     return "Done"
+
 
 def test_performance_assertions():
     runner = ContractRunner()

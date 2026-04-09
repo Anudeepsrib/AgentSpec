@@ -17,15 +17,19 @@ from agentspec.chaos import ChaosInjector
 
 # ── Simulated tools ─────────────────────────────────────────────────────────
 
+
 def search_products(query: str) -> dict:
     """Mock search tool."""
     return {"products": [{"id": "p1", "name": "Laptop"}]}
+
 
 def process_payment(amount: float) -> dict:
     """Mock payment tool."""
     return {"status": "success", "transaction_id": "tx123"}
 
+
 # ── Simulated agent ────────────────────────────────────────────────────────
+
 
 def resilient_agent(user_input: str, interceptor=None, chaos=None, **kwargs):
     """An agent that attempts to be resilient to tool failures."""
@@ -48,8 +52,9 @@ def resilient_agent(user_input: str, interceptor=None, chaos=None, **kwargs):
             results = search(query=user_input)
             break
         except Exception as e:
-            print(f"  [Agent] Search failed (attempt {attempt+1}): {e}")
-            if attempt == 2: raise
+            print(f"  [Agent] Search failed (attempt {attempt + 1}): {e}")
+            if attempt == 2:
+                raise
             time.sleep(0.1)
 
     # Payment
@@ -59,7 +64,9 @@ def resilient_agent(user_input: str, interceptor=None, chaos=None, **kwargs):
     except Exception as e:
         return f"Payment failed: {e}"
 
+
 # ── Contract tests ──────────────────────────────────────────────────────────
+
 
 @contract("resilience_to_rate_limits")
 def test_agent_retries_on_failure():
@@ -78,6 +85,7 @@ def test_agent_retries_on_failure():
 
     print("[PASS] test_agent_retries_on_failure")
 
+
 @contract("performance_under_latency")
 def test_agent_performance_under_load():
     """Test: Agent flow should complete even if payment is slow."""
@@ -88,10 +96,11 @@ def test_agent_performance_under_load():
     result = runner.run(agent=resilient_agent, input="laptop", chaos=chaos)
 
     # Assertions
-    result.assert_completed_in(5) # Still finish within 5s despite 1s delay
+    result.assert_completed_in(5)  # Still finish within 5s despite 1s delay
     result.must_call("process_payment")
 
     print("[PASS] test_agent_performance_under_load")
+
 
 @contract("handling_corrupt_data")
 def test_agent_handles_bad_responses():
@@ -108,6 +117,7 @@ def test_agent_handles_bad_responses():
         print(f"  [System] Agent crashed as expected or handled improperly: {e}")
 
     print("[PASS] test_agent_handles_bad_responses")
+
 
 if __name__ == "__main__":
     print("=" * 50)

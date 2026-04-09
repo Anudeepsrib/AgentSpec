@@ -38,13 +38,18 @@ class TestAnthropicAdapter:
         interceptor = TraceInterceptor()
         adapter = AnthropicAdapter(interceptor)
 
-        client = self._make_mock_client([
-            {"name": "search", "input": {"q": "flights"}},
-            {"name": "book", "input": {"id": "FL1"}},
-        ])
+        client = self._make_mock_client(
+            [
+                {"name": "search", "input": {"q": "flights"}},
+                {"name": "book", "input": {"id": "FL1"}},
+            ]
+        )
 
         interceptor.start()
-        adapter.run(client, input={"messages": [{"role": "user", "content": "book flight"}], "model": "claude-3"})
+        adapter.run(
+            client,
+            input={"messages": [{"role": "user", "content": "book flight"}], "model": "claude-3"},
+        )
         interceptor.stop()
 
         assert len(interceptor.trace.tool_calls) == 2
@@ -154,6 +159,7 @@ class TestContractSuite:
             def agent(input_text, interceptor=None, **kwargs):
                 interceptor.record("tool", {"x": 1})
                 return "ok"
+
             result = runner.run(agent=agent, input="test")
             result.must_call("tool")
 
@@ -169,6 +175,7 @@ class TestContractSuite:
         def test_fail(runner):
             def agent(input_text, interceptor=None, **kwargs):
                 return "nothing"
+
             result = runner.run(agent=agent, input="test")
             result.must_call("nonexistent_tool")  # This will fail
 
@@ -189,8 +196,11 @@ class TestContractSuite:
         @suite.contract("sanitize_test")
         def test_sanitize(runner):
             def agent(input_text, interceptor=None, **kwargs):
-                interceptor.record("api_call", {"url": "https://api.example.com", "secret": "sk-abc"})
+                interceptor.record(
+                    "api_call", {"url": "https://api.example.com", "secret": "sk-abc"}
+                )
                 return "ok"
+
             result = runner.run(agent=agent, input="test")
             captured_args.update(result.trace.tool_calls[0].args)
 

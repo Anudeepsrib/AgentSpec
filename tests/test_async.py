@@ -10,6 +10,7 @@ async def async_tool(x: int) -> int:
     await asyncio.sleep(0.01)
     return x * 2
 
+
 async def my_async_agent(input: str, interceptor: Any = None) -> str:
     # Manual tool wrapping for testing interceptor
     if interceptor:
@@ -21,6 +22,7 @@ async def my_async_agent(input: str, interceptor: Any = None) -> str:
     res2 = await wrapped_tool(x=10)
     return f"Done: {res1}, {res2}"
 
+
 @pytest.mark.asyncio
 async def test_async_agent_execution():
     runner = ContractRunner()
@@ -30,6 +32,7 @@ async def test_async_agent_execution():
     result.must_call("async_tool").with_args(x=5)
     result.must_call("async_tool").with_args(x=10)
     result.assert_output_contains("Done: 10, 20")
+
 
 @pytest.mark.asyncio
 async def test_async_contract_decorator():

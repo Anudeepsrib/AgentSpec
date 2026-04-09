@@ -13,6 +13,7 @@ from agentspec import ContractRunner, ContractSuite, contract
 
 # ── Simulated multi-agent system ────────────────────────────────────────────
 
+
 def planner_agent(task: str, interceptor=None, **kwargs):
     """Planner agent: creates plans and delegates to executor."""
     plan = interceptor.wrap_tool(
@@ -66,6 +67,7 @@ def orchestrator(user_input: str, interceptor=None, **kwargs):
 
 
 # ── Contract tests ──────────────────────────────────────────────────────────
+
 
 @contract("multi_agent_ordering")
 def test_planner_before_executor():

@@ -42,12 +42,15 @@ class ContractRunner:
         # Import adapters lazily
         if adapter == "openai":
             from agentspec.adapters.openai import OpenAIAdapter
+
             return OpenAIAdapter(self._interceptor)
         elif adapter == "anthropic":
             from agentspec.adapters.anthropic import AnthropicAdapter
+
             return AnthropicAdapter(self._interceptor)
         elif adapter == "langchain":
             from agentspec.adapters.langchain import LangChainAdapter
+
             return LangChainAdapter(self._interceptor)
 
         raise ValueError(f"Unknown adapter: {adapter}")
@@ -128,7 +131,9 @@ class ContractRunner:
 
             if self._adapter is not None:
                 if not hasattr(self._adapter, "arun"):
-                    raise NotImplementedError(f"Adapter {type(self._adapter).__name__} does not support arun()")
+                    raise NotImplementedError(
+                        f"Adapter {type(self._adapter).__name__} does not support arun()"
+                    )
                 result = await self._adapter.arun(agent, input, context)
             else:
                 if isinstance(input, dict):
@@ -158,6 +163,7 @@ class ContractRunner:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             kwargs.setdefault("chaos", chaos)
             return agent(*args, **kwargs)
+
         return wrapper
 
     def _wrap_with_chaos_async(
@@ -166,9 +172,11 @@ class ContractRunner:
         chaos: Any,
     ) -> Callable[..., Any]:
         """Wrap async agent execution with chaos injection."""
+
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             kwargs.setdefault("chaos", chaos)
             return await agent(*args, **kwargs)
+
         return wrapper
 
     def wrap_tool(
@@ -202,10 +210,7 @@ class ContractRunner:
         agent_id: str | None = None,
     ) -> list[Callable[..., Any]]:
         """Wrap multiple tools with interception and optional chaos."""
-        return [
-            self.wrap_tool(tool, chaos=chaos, agent_id=agent_id)
-            for tool in tools
-        ]
+        return [self.wrap_tool(tool, chaos=chaos, agent_id=agent_id) for tool in tools]
 
     def wrap_tools_async(
         self,
@@ -214,10 +219,7 @@ class ContractRunner:
         agent_id: str | None = None,
     ) -> list[Callable[..., Any]]:
         """Wrap multiple async tools with interception and optional chaos."""
-        return [
-            self.wrap_tool_async(tool, chaos=chaos, agent_id=agent_id)
-            for tool in tools
-        ]
+        return [self.wrap_tool_async(tool, chaos=chaos, agent_id=agent_id) for tool in tools]
 
     def get_trace(self) -> AgentTrace:
         """Get the execution trace."""
@@ -241,6 +243,7 @@ def contract(name: str | None = None) -> Callable:
             result = runner.run(agent=my_agent, input="Book to NYC")
             result.must_call("search_flights")
     """
+
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         contract_name = name or func.__name__
 
@@ -260,6 +263,7 @@ def contract(name: str | None = None) -> Callable:
                         if isinstance(result, AgentResult):
                             return result
                         return result
+
                     return async_run()
                 else:
                     result = func(*args, **kwargs)
@@ -342,6 +346,7 @@ class ContractSuite:
         The decorated function receives a fresh ``ContractRunner`` instance
         as its first argument.
         """
+
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
             @functools.wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -369,4 +374,3 @@ class ContractSuite:
             except Exception as e:
                 results.append({"name": f"{self.name}::{name}", "passed": False, "error": str(e)})
         return results
-

@@ -61,7 +61,9 @@ class CustomerSupportAgent:
         # Process refund
         refund = self.tools["process_refund"]("ORD-789", "Customer request")
         if interceptor:
-            interceptor.record("process_refund", {"order_id": "ORD-789", "reason": "Customer request"}, refund)
+            interceptor.record(
+                "process_refund", {"order_id": "ORD-789", "reason": "Customer request"}, refund
+            )
 
         return {"output": f"Refund {refund['refund_id']} is being processed"}
 
@@ -93,10 +95,7 @@ def test_refund_request_follows_correct_flow() -> None:
     agent = CustomerSupportAgent()
     runner = ContractRunner()
 
-    result = runner.run(
-        agent=agent.run,
-        input="I want a refund for my order"
-    )
+    result = runner.run(agent=agent.run, input="I want a refund for my order")
 
     # Refund flow: lookup → check_status → process_refund
     result.must_call("lookup_customer")
@@ -113,10 +112,7 @@ def test_status_check_uses_correct_tools() -> None:
     agent = CustomerSupportAgent()
     runner = ContractRunner()
 
-    result = runner.run(
-        agent=agent.run,
-        input="Where is my order?"
-    )
+    result = runner.run(agent=agent.run, input="Where is my order?")
 
     # Status check flow
     result.must_call("lookup_customer")
@@ -133,10 +129,7 @@ def test_general_inquiry_escalates() -> None:
     agent = CustomerSupportAgent()
     runner = ContractRunner()
 
-    result = runner.run(
-        agent=agent.run,
-        input="How do I change my subscription plan?"
-    )
+    result = runner.run(agent=agent.run, input="How do I change my subscription plan?")
 
     # Should escalate
     result.must_call("escalate")
@@ -153,11 +146,7 @@ def test_handles_db_timeout() -> None:
     chaos.fail_tool("lookup_customer", after_calls=0, error="TimeoutError")
 
     # Real agent would retry; this tests the chaos system
-    runner.run(
-        agent=agent.run,
-        input="Check my order status",
-        chaos=chaos
-    )
+    runner.run(agent=agent.run, input="Check my order status", chaos=chaos)
 
     # Even with failure, we might see the attempt
     # In a real scenario with retry, this would pass

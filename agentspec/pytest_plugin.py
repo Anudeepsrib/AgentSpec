@@ -33,13 +33,15 @@ class ContractReport:
         error: str | None = None,
     ) -> None:
         """Add a test result."""
-        self.results.append({
-            "name": name,
-            "passed": passed,
-            "tool_calls": tool_calls,
-            "assertions": assertions,
-            "error": error,
-        })
+        self.results.append(
+            {
+                "name": name,
+                "passed": passed,
+                "tool_calls": tool_calls,
+                "assertions": assertions,
+                "error": error,
+            }
+        )
         if passed:
             self.passed += 1
         else:
@@ -86,10 +88,7 @@ _report = ContractReport()
 
 def pytest_configure(config: Any) -> None:
     """Configure pytest with our marker."""
-    config.addinivalue_line(
-        "markers",
-        "contract(name): mark test as an agent contract test"
-    )
+    config.addinivalue_line("markers", "contract(name): mark test as an agent contract test")
 
 
 @pytest.fixture

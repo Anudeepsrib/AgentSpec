@@ -4,8 +4,7 @@
 import warnings
 
 warnings.warn(
-    "Importing from 'agentcontract' is deprecated. "
-    "Use 'from agentspec import ...' instead.",
+    "Importing from 'agentcontract' is deprecated. Use 'from agentspec import ...' instead.",
     DeprecationWarning,
     stacklevel=2,
 )

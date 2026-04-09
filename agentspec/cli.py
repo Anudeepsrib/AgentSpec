@@ -27,9 +27,15 @@ def cli() -> None:
 @click.option("-v", "--verbose", is_flag=True, help="Verbose output")
 @click.option("--snapshot-update", is_flag=True, help="Update all snapshots")
 @click.option("-k", "--keyword", help="Only run tests matching keyword")
-@click.option("--adapter", type=click.Choice(["openai", "anthropic", "langchain"]), help="Default adapter")
-@click.option("--no-persist", is_flag=True, help="Disable run log persistence (for sensitive environments)")
-@click.option("-o", "--output", "output_path", help="Export results to JSONL file (for CI artifacts)")
+@click.option(
+    "--adapter", type=click.Choice(["openai", "anthropic", "langchain"]), help="Default adapter"
+)
+@click.option(
+    "--no-persist", is_flag=True, help="Disable run log persistence (for sensitive environments)"
+)
+@click.option(
+    "-o", "--output", "output_path", help="Export results to JSONL file (for CI artifacts)"
+)
 def run(
     test_path: str,
     verbose: bool,
@@ -78,6 +84,7 @@ def run(
         import shutil
 
         from agentspec.storage import RunLogger
+
         logger = RunLogger()
         logs = logger.list_logs()
         if logs:
@@ -223,14 +230,16 @@ def test_flight_booking():
 pytest_plugins = ["agentspec.pytest_plugin"]
 """)
 
-    console.print(Panel(
-        f"[green]Initialized AgentSpec project in {target.absolute()}[/green]\n\n"
-        f"Next steps:\n"
-        f"  1. Write tests in {target / 'tests'}/\n"
-        f"  2. Run with: [cyan]agentspec run[/cyan]\n"
-        f"  3. See {example_test.name} for an example",
-        title="AgentSpec init",
-    ))
+    console.print(
+        Panel(
+            f"[green]Initialized AgentSpec project in {target.absolute()}[/green]\n\n"
+            f"Next steps:\n"
+            f"  1. Write tests in {target / 'tests'}/\n"
+            f"  2. Run with: [cyan]agentspec run[/cyan]\n"
+            f"  3. See {example_test.name} for an example",
+            title="AgentSpec init",
+        )
+    )
 
 
 @cli.command()
@@ -261,11 +270,11 @@ def ui(port: int, host: str) -> None:
             super().__init__(*args, directory=str(dist_dir), **kwargs)
 
         def do_GET(self):
-            if self.path == '/api/snapshots':
+            if self.path == "/api/snapshots":
                 self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                self.send_header("Content-type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
                 self.end_headers()
 
                 # Fetch snapshots
@@ -273,20 +282,22 @@ def ui(port: int, host: str) -> None:
                 snaps = []
                 for snap_path in mgr.list_snapshots():
                     try:
-                        with open(snap_path, encoding='utf-8') as f:
+                        with open(snap_path, encoding="utf-8") as f:
                             data = json.load(f)
-                            snaps.append({
-                                'id': snap_path.stem,
-                                'name': snap_path.stem,
-                                'filename': snap_path.name,
-                                'path': str(snap_path),
-                                'trace': data
-                            })
+                            snaps.append(
+                                {
+                                    "id": snap_path.stem,
+                                    "name": snap_path.stem,
+                                    "filename": snap_path.name,
+                                    "path": str(snap_path),
+                                    "trace": data,
+                                }
+                            )
                     except Exception:
                         pass
 
                 # Sort by start_time descending
-                snaps.sort(key=lambda x: x.get('trace', {}).get('start_time', 0), reverse=True)
+                snaps.sort(key=lambda x: x.get("trace", {}).get("start_time", 0), reverse=True)
 
                 self.wfile.write(json.dumps(snaps).encode())
                 return
@@ -297,13 +308,15 @@ def ui(port: int, host: str) -> None:
     socketserver.TCPServer.allow_reuse_address = True
 
     with socketserver.TCPServer((host, port), DashboardHandler) as httpd:
-        console.print(Panel(
-            f"[bold green]AgentSpec Trace Visualizer[/bold green]\n\n"
-            f"🚀 Server running on [cyan]http://{host}:{port}[/cyan]\n"
-            f"📂 Serving from [dim]{dist_dir}[/dim]\n\n"
-            f"Press Ctrl+C to stop.",
-            title="Dashboard",
-        ))
+        console.print(
+            Panel(
+                f"[bold green]AgentSpec Trace Visualizer[/bold green]\n\n"
+                f"🚀 Server running on [cyan]http://{host}:{port}[/cyan]\n"
+                f"📂 Serving from [dim]{dist_dir}[/dim]\n\n"
+                f"Press Ctrl+C to stop.",
+                title="Dashboard",
+            )
+        )
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

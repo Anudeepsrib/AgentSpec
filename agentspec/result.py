@@ -145,7 +145,9 @@ class ToolAssertion:
 
     def immediately_after(self, other_tool: str, agent_id: str | None = None) -> Self:
         """Assert this tool was called immediately after another."""
-        assert_immediately_after(self._result.trace, self._tool_name, other_tool, self._agent_id, agent_id)
+        assert_immediately_after(
+            self._result.trace, self._tool_name, other_tool, self._agent_id, agent_id
+        )
         return self
 
     def exactly(self, n: int) -> Self:
@@ -201,4 +203,3 @@ class CountAssertion:
         """Assert at most n calls."""
         assert_at_most(self._result.trace, self._tool_name, n, self._agent_id)
         return self._result
-

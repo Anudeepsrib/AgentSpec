@@ -15,6 +15,7 @@ from agentspec import ContractRunner, ContractSuite, contract
 # ── Step 1: Define your tools ───────────────────────────────────────────────
 # These are the tools your agent calls. In production, they'd hit real APIs.
 
+
 def search_flights(destination: str, date: str = "2024-06-01") -> dict:
     """Search for flights to a destination."""
     return {
@@ -38,6 +39,7 @@ def cancel_booking(booking_id: str) -> dict:
 # ── Step 2: Define your agent ──────────────────────────────────────────────
 # A mock agent that simulates tool-calling behavior.
 
+
 def booking_agent(user_input: str, interceptor=None, **kwargs):
     """A simple agent that searches and books flights.
 
@@ -57,6 +59,7 @@ def booking_agent(user_input: str, interceptor=None, **kwargs):
 
 
 # ── Step 3: Write contract tests ───────────────────────────────────────────
+
 
 @contract("booking_happy_path")
 def test_books_correct_flight():
@@ -94,6 +97,7 @@ suite = ContractSuite(
 @suite.contract("search_only")
 def test_search_only(runner):
     """Test: A search-only flow doesn't trigger booking."""
+
     def search_only_agent(user_input, interceptor=None, **kwargs):
         search = interceptor.wrap_tool(search_flights, "search_flights")
         search(destination="LAX")
