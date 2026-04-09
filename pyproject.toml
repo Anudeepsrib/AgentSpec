@@ -64,7 +64,7 @@ agentspec = "agentspec.cli:cli"
 agentcontract = "agentspec.cli:cli"
 
 [project.entry-points."pytest11"]
-agentcontract = "agentspec.pytest_plugin"
+"agentspec.pytest_plugin" = "agentspec.pytest_plugin"
 
 [project.urls]
 Homepage = "https://agentspec.dev"
