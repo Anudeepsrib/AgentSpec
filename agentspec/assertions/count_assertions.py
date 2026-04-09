@@ -1,8 +1,8 @@
 """Standalone count assertion functions."""
 
 
-from agentcontract.interceptor import AgentTrace
-from agentcontract.exceptions import CountMismatch
+from agentspec.interceptor import AgentTrace
+from agentspec.exceptions import CountMismatch
 
 
 def assert_exactly(trace: AgentTrace, tool_name: str, n: int, agent_id: str | None = None) -> None:

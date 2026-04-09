@@ -12,10 +12,10 @@ from __future__ import annotations
 import time
 from typing import Any, TYPE_CHECKING
 
-from agentcontract.adapters.base import BaseAdapter
+from agentspec.adapters.base import BaseAdapter
 
 if TYPE_CHECKING:
-    from agentcontract.interceptor import TraceInterceptor
+    from agentspec.interceptor import TraceInterceptor
 
 
 class AgentSpecCallbackHandler:
@@ -23,7 +23,7 @@ class AgentSpecCallbackHandler:
 
     Can be used standalone::
 
-        from agentcontract.adapters.langchain import AgentSpecCallbackHandler
+        from agentspec.adapters.langchain import AgentSpecCallbackHandler
 
         handler = AgentSpecCallbackHandler(interceptor)
         agent.invoke({"input": "query"}, config={"callbacks": [handler]})

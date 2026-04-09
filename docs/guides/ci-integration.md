@@ -48,7 +48,7 @@ jobs:
         run: pip install -e ".[dev,all]"
 
       - name: Run contracts
-        run: agentcontract run tests/ -v -o results.jsonl
+        run: agentspec run tests/ -v -o results.jsonl
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -63,7 +63,7 @@ jobs:
 Export test results for programmatic consumption:
 
 ```bash
-agentcontract run tests/ -o results.jsonl
+agentspec run tests/ -o results.jsonl
 ```
 
 **Output format** (one JSON object per line):
@@ -84,7 +84,7 @@ agentcontract run tests/ -o results.jsonl
 ### Verify Mode (Default)
 
 ```bash
-agentcontract run tests/          # Compare against saved snapshots
+agentspec run tests/          # Compare against saved snapshots
 ```
 
 If snapshots have changed, the test fails with a diff showing exactly what changed.
@@ -92,7 +92,7 @@ If snapshots have changed, the test fails with a diff showing exactly what chang
 ### Update Mode
 
 ```bash
-agentcontract run tests/ --snapshot-update   # Overwrite all snapshots
+agentspec run tests/ --snapshot-update   # Overwrite all snapshots
 agentcontract snapshot update tests/         # Interactive update
 ```
 
@@ -101,12 +101,12 @@ agentcontract snapshot update tests/         # Interactive update
 ```yaml
 # On PRs: verify snapshots match
 - name: Verify contracts
-  run: agentcontract run tests/ -v
+  run: agentspec run tests/ -v
 
 # After merge to main: update snapshots if needed
 - name: Update snapshots
   if: github.ref == 'refs/heads/main'
-  run: agentcontract run tests/ --snapshot-update
+  run: agentspec run tests/ --snapshot-update
 ```
 
 ## Sensitive Environments
@@ -114,7 +114,7 @@ agentcontract snapshot update tests/         # Interactive update
 For environments where trace data shouldn't be persisted to disk:
 
 ```bash
-agentcontract run tests/ --no-persist
+agentspec run tests/ --no-persist
 ```
 
 This disables the JSONL run log entirely. Useful for GDPR/CCPA compliance.
@@ -137,7 +137,7 @@ contract-tests:
   image: python:3.11
   script:
     - pip install -e ".[dev]"
-    - agentcontract run tests/ -v -o results.jsonl
+    - agentspec run tests/ -v -o results.jsonl
   artifacts:
     paths:
       - results.jsonl
@@ -154,7 +154,7 @@ jobs:
     steps:
       - checkout
       - run: pip install -e ".[dev]"
-      - run: agentcontract run tests/ -v -o results.jsonl
+      - run: agentspec run tests/ -v -o results.jsonl
       - store_artifacts:
           path: results.jsonl
 ```

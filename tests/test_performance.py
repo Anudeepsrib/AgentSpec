@@ -2,8 +2,8 @@ import time
 import pytest
 from typing import Any
 
-from agentcontract.contract import ContractRunner
-from agentcontract.exceptions import ContractViolation
+from agentspec.contract import ContractRunner
+from agentspec.exceptions import ContractViolation
 
 def slow_tool(t: float) -> str:
     time.sleep(t)

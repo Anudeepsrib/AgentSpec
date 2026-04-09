@@ -4,8 +4,8 @@
 import re
 from typing import Any
 
-from agentcontract.interceptor import AgentTrace, ToolCall
-from agentcontract.exceptions import ArgMismatch
+from agentspec.interceptor import AgentTrace, ToolCall
+from agentspec.exceptions import ArgMismatch
 
 
 def assert_with_args(

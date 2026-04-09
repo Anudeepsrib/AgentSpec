@@ -1,4 +1,4 @@
-"""pytest plugin for agentcontract."""
+"""pytest plugin for agentspec."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
-from agentcontract.contract import ContractRunner
-from agentcontract.interceptor import AgentTrace
-from agentcontract.snapshot import SnapshotManager
+from agentspec.contract import ContractRunner
+from agentspec.interceptor import AgentTrace
+from agentspec.snapshot import SnapshotManager
 
 console = Console()
 

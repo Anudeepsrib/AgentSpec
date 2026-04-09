@@ -5,7 +5,7 @@ AgentSpec natively supports testing multi-agent systems where multiple agents in
 ## Basic Multi-Agent Test
 
 ```python
-from agentcontract import ContractRunner
+from agentspec import ContractRunner
 
 runner = ContractRunner()
 
@@ -55,7 +55,7 @@ result.tool_call_count("execute", agent_id="executor").exactly(1)
 ## Using ContractSuite for Multi-Agent Tests
 
 ```python
-from agentcontract import ContractSuite
+from agentspec import ContractSuite
 
 suite = ContractSuite(name="multi_agent_booking", persist=False)
 

@@ -1,8 +1,8 @@
 import pytest
 from typing import Any
 
-from agentcontract.contract import ContractRunner
-from agentcontract.exceptions import ToolNotCalled, ToolCalledUnexpectedly
+from agentspec.contract import ContractRunner
+from agentspec.exceptions import ToolNotCalled, ToolCalledUnexpectedly
 
 def tool_a(x: int) -> int:
     return x + 1
@@ -47,7 +47,7 @@ def test_multi_agent_execution():
     result.must_call("tool_b", agent_id="agent_1").with_args(y=3)
     
     # Check order for specific agent
-    result.must_call("tool_a", agent_id="agent_1").before("tool_b", other_agent_id="agent_1")
+    result.must_call("tool_a", agent_id="agent_1").before("tool_b", agent_id="agent_1")
     
     # Check tool_call_count
     result.tool_call_count("tool_a", agent_id="agent_1").exactly(1)

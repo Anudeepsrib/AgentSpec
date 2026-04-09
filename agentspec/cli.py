@@ -1,4 +1,4 @@
-"""CLI for agentcontract."""
+"""CLI for agentspec."""
 
 from __future__ import annotations
 
@@ -11,15 +11,15 @@ import click
 from rich.console import Console
 from rich.panel import Panel
 
-from agentcontract import __version__
+from agentspec import __version__
 
 console = Console()
 
 
 @click.group()
-@click.version_option(version=__version__, prog_name="agentcontract")
+@click.version_option(version=__version__, prog_name="AgentSpec")
 def cli() -> None:
-    """agentcontract — deterministic testing for AI agents."""
+    """AgentSpec — deterministic testing for AI agents."""
     pass
 
 
@@ -67,7 +67,7 @@ def run(
         console.print("[dim]Run log persistence disabled[/dim]")
 
     # Add our plugin
-    cmd.extend(["-p", "agentcontract.pytest_plugin"])
+    cmd.extend(["-p", "agentspec.pytest_plugin"])
 
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     console.print()
@@ -77,7 +77,7 @@ def run(
     # Export results if --output specified
     if output_path and not no_persist:
         import shutil
-        from agentcontract.storage import RunLogger
+        from agentspec.storage import RunLogger
         logger = RunLogger()
         logs = logger.list_logs()
         if logs:
@@ -115,7 +115,7 @@ def snapshot_update(test_path: str, update_all: bool) -> None:
         "pytest",
         test_path,
         "-p",
-        "agentcontract.pytest_plugin",
+        "agentspec.pytest_plugin",
         "--snapshot-update",
     ]
 
@@ -129,7 +129,7 @@ def snapshot_update(test_path: str, update_all: bool) -> None:
 @snapshot_cmd.command(name="list")
 def snapshot_list() -> None:
     """List all saved snapshots."""
-    from agentcontract.snapshot import SnapshotManager
+    from agentspec.snapshot import SnapshotManager
 
     mgr = SnapshotManager()
     snapshots = mgr.list_snapshots()
@@ -148,7 +148,7 @@ def snapshot_list() -> None:
 @click.confirmation_option(prompt="Delete all snapshots?")
 def snapshot_clean() -> None:
     """Remove all snapshots."""
-    from agentcontract.snapshot import SnapshotManager
+    from agentspec.snapshot import SnapshotManager
 
     mgr = SnapshotManager()
     snapshots = mgr.list_snapshots()
@@ -162,7 +162,7 @@ def snapshot_clean() -> None:
 @cli.command()
 @click.argument("output_path", required=False, default=".")
 def init(output_path: str) -> None:
-    """Initialize a new agentcontract project.
+    """Initialize a new AgentSpec project.
 
     Creates example test file and directory structure.
     """
@@ -175,9 +175,9 @@ def init(output_path: str) -> None:
     # Create example test file
     example_test = target / "tests" / "example_contract.py"
     if not example_test.exists():
-        example_test.write_text('''"""Example agent contract test — run with: agentcontract run"""
+        example_test.write_text('''"""Example agent contract test — run with: agentspec run"""
 
-from agentcontract import contract, ContractRunner
+from agentspec import contract, ContractRunner
 
 
 def search_flights(destination: str) -> dict:
@@ -220,16 +220,16 @@ def test_flight_booking():
     if not conftest.exists():
         conftest.write_text("""\"\"\"pytest configuration.\"\"\"
 
-pytest_plugins = ["agentcontract.pytest_plugin"]
+pytest_plugins = ["agentspec.pytest_plugin"]
 """)
 
     console.print(Panel(
-        f"[green]Initialized agentcontract project in {target.absolute()}[/green]\n\n"
+        f"[green]Initialized AgentSpec project in {target.absolute()}[/green]\n\n"
         f"Next steps:\n"
         f"  1. Write tests in {target / 'tests'}/\n"
-        f"  2. Run with: [cyan]agentcontract run[/cyan]\n"
+        f"  2. Run with: [cyan]agentspec run[/cyan]\n"
         f"  3. See {example_test.name} for an example",
-        title="agentcontract init",
+        title="AgentSpec init",
     ))
 
 
@@ -241,7 +241,7 @@ def ui(port: int, host: str) -> None:
     import http.server
     import socketserver
     import json
-    from agentcontract.snapshot import SnapshotManager
+    from agentspec.snapshot import SnapshotManager
     
     # Path to dashboard build
     local_dist = Path(__file__).parent.parent / "dashboard" / "dist"

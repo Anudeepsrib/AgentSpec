@@ -8,6 +8,8 @@ Install AgentSpec via pip:
 pip install agentcontract
 ```
 
+*Note: The PyPI package name is `agentcontract` for backward compatibility. Import it as `agentspec` in your code.*
+
 ### Framework-Specific Extras
 
 ```bash
@@ -20,8 +22,8 @@ pip install agentcontract[all]         # All adapters
 ### Development Installation
 
 ```bash
-git clone https://github.com/Anudeepsrib/AgentContract.git
-cd AgentContract
+git clone https://github.com/Anudeepsrib/AgentSpec.git
+cd AgentSpec
 pip install -e ".[dev,all]"
 ```
 
@@ -32,7 +34,7 @@ pip install -e ".[dev,all]"
 A **contract** is a deterministic assertion about what an AI agent _must do_, _must not do_, and _in what order_. Unlike LLM-as-judge evaluations that score output quality, contracts enforce binary pass/fail behavioral requirements.
 
 ```python
-from agentcontract import contract, ContractRunner
+from agentspec import contract, ContractRunner
 
 @contract("booking_flow")
 def test_correct_booking():
@@ -78,10 +80,10 @@ def my_agent(user_input, interceptor=None, **kwargs):
 ## Running Tests
 
 ```bash
-agentcontract run tests/         # Run all contract tests
-agentcontract run tests/ -v      # Verbose output
-agentcontract run tests/ -k booking  # Filter by keyword
-agentcontract ui                 # Launch trace visualizer
+agentspec run tests/         # Run all contract tests
+agentspec run tests/ -v      # Verbose output
+agentspec run tests/ -k booking  # Filter by keyword
+agentspec ui                 # Launch trace visualizer
 ```
 
 ## Next Steps

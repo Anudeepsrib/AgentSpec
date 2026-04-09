@@ -7,7 +7,7 @@ AgentSpec ships with adapters for OpenAI, Anthropic, and LangChain. You can buil
 All adapters extend `BaseAdapter` and implement two methods:
 
 ```python
-from agentcontract.adapters.base import BaseAdapter
+from agentspec.adapters.base import BaseAdapter
 
 class MyFrameworkAdapter(BaseAdapter):
     def run(self, agent, input, context=None):
@@ -24,7 +24,7 @@ class MyFrameworkAdapter(BaseAdapter):
 ### Step 1: Extend BaseAdapter
 
 ```python
-from agentcontract.adapters.base import BaseAdapter
+from agentspec.adapters.base import BaseAdapter
 from typing import Any
 import time
 
@@ -103,8 +103,8 @@ result.must_call("search")
 The `AgentSpecCallbackHandler` can be used without the adapter:
 
 ```python
-from agentcontract.adapters.langchain import AgentSpecCallbackHandler
-from agentcontract.interceptor import TraceInterceptor
+from agentspec.adapters.langchain import AgentSpecCallbackHandler
+from agentspec.interceptor import TraceInterceptor
 
 interceptor = TraceInterceptor()
 handler = AgentSpecCallbackHandler(interceptor)

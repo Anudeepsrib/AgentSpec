@@ -10,7 +10,7 @@ Or with pytest:
     pytest examples/quickstart.py -v
 """
 
-from agentcontract import contract, ContractRunner, ContractSuite
+from agentspec import contract, ContractRunner, ContractSuite
 
 
 # ── Step 1: Define your tools ───────────────────────────────────────────────
@@ -142,4 +142,4 @@ if __name__ == "__main__":
     print("  - Run with pytest:       pytest examples/quickstart.py -v")
     print("  - Save snapshots:        result.snapshot('my_flow')")
     print("  - Visualize traces:      agentcontract ui")
-    print("  - Add chaos:             from agentcontract.chaos import ChaosInjector")
+    print("  - Add chaos:             from agentspec.chaos import ChaosInjector")

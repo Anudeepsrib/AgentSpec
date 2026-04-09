@@ -1,9 +1,9 @@
 """Tests for the core contract system."""
 
 import pytest
-from agentcontract import contract, ContractRunner, AgentResult
-from agentcontract.interceptor import AgentTrace
-from agentcontract.exceptions import ToolNotCalled, ToolCalledUnexpectedly
+from agentspec import contract, ContractRunner, AgentResult
+from agentspec.interceptor import AgentTrace
+from agentspec.exceptions import ToolNotCalled, ToolCalledUnexpectedly
 
 
 def test_contract_runner_creates_result() -> None:

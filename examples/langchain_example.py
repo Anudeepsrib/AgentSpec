@@ -1,9 +1,9 @@
-"""Example: Testing a LangChain-based customer support agent with agentcontract."""
+"""Example: Testing a LangChain-based customer support agent with agentspec."""
 
 from typing import Any
 
-from agentcontract import contract, ContractRunner
-from agentcontract.chaos import ChaosInjector
+from agentspec import contract, ContractRunner
+from agentspec.chaos import ChaosInjector
 
 
 class CustomerSupportAgent:

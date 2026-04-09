@@ -10,7 +10,7 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from agentcontract.adapters.base import BaseAdapter
+from agentspec.adapters.base import BaseAdapter
 
 
 class AnthropicAdapter(BaseAdapter):

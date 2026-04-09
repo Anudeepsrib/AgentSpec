@@ -11,8 +11,8 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from agentcontract.interceptor import AgentTrace
-from agentcontract.exceptions import SnapshotMismatch
+from agentspec.interceptor import AgentTrace
+from agentspec.exceptions import SnapshotMismatch
 
 console = Console()
 

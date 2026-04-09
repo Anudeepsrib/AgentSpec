@@ -1,0 +1,1 @@
+# This file ensures that dashboard/dist exists in git so that hatchling doesn't crash on force-include when running pip install -e . on CI.

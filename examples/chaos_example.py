@@ -11,8 +11,8 @@ Test: pytest examples/chaos_example.py -v
 """
 
 import time
-from agentcontract import contract, ContractRunner
-from agentcontract.chaos import ChaosInjector
+from agentspec import contract, ContractRunner
+from agentspec.chaos import ChaosInjector
 
 # ── Simulated tools ─────────────────────────────────────────────────────────
 

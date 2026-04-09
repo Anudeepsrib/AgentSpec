@@ -3,8 +3,8 @@
 import pytest
 import time
 
-from agentcontract.chaos import ChaosInjector, ChaosRule
-from agentcontract.chaos.injector import RateLimitError
+from agentspec.chaos import ChaosInjector, ChaosRule
+from agentspec.chaos.injector import RateLimitError
 
 
 class TestChaosInjector:

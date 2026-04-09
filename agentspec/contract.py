@@ -6,12 +6,12 @@ import functools
 import inspect
 from typing import Any, Callable
 
-from agentcontract.interceptor import AgentTrace, TraceInterceptor
-from agentcontract.result import AgentResult
-from agentcontract.snapshot import SnapshotManager
-from agentcontract.storage import RunLogger
-from agentcontract.adapters.base import BaseAdapter
-from agentcontract.exceptions import ContractViolation
+from agentspec.interceptor import AgentTrace, TraceInterceptor
+from agentspec.result import AgentResult
+from agentspec.snapshot import SnapshotManager
+from agentspec.storage import RunLogger
+from agentspec.adapters.base import BaseAdapter
+from agentspec.exceptions import ContractViolation
 
 
 class ContractRunner:
@@ -40,13 +40,13 @@ class ContractRunner:
 
         # Import adapters lazily
         if adapter == "openai":
-            from agentcontract.adapters.openai import OpenAIAdapter
+            from agentspec.adapters.openai import OpenAIAdapter
             return OpenAIAdapter(self._interceptor)
         elif adapter == "anthropic":
-            from agentcontract.adapters.anthropic import AnthropicAdapter
+            from agentspec.adapters.anthropic import AnthropicAdapter
             return AnthropicAdapter(self._interceptor)
         elif adapter == "langchain":
-            from agentcontract.adapters.langchain import LangChainAdapter
+            from agentspec.adapters.langchain import LangChainAdapter
             return LangChainAdapter(self._interceptor)
 
         raise ValueError(f"Unknown adapter: {adapter}")

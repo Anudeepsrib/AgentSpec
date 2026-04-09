@@ -7,9 +7,9 @@ from typing import Any, Self
 
 import time
 
-from agentcontract.interceptor import AgentTrace, ToolCall
-from agentcontract.snapshot import SnapshotManager
-from agentcontract.exceptions import (
+from agentspec.interceptor import AgentTrace, ToolCall
+from agentspec.snapshot import SnapshotManager
+from agentspec.exceptions import (
     ToolNotCalled,
     ToolCalledUnexpectedly,
     OrderViolation,
@@ -17,10 +17,10 @@ from agentcontract.exceptions import (
     CountMismatch,
     ContractViolation,
 )
-from agentcontract.assertions.arg_assertions import assert_with_args, assert_with_args_containing, assert_with_args_matching
-from agentcontract.assertions.call_assertions import assert_must_call, assert_must_not_call
-from agentcontract.assertions.count_assertions import assert_exactly, assert_at_least, assert_at_most
-from agentcontract.assertions.order_assertions import assert_before, assert_after, assert_immediately_after
+from agentspec.assertions.arg_assertions import assert_with_args, assert_with_args_containing, assert_with_args_matching
+from agentspec.assertions.call_assertions import assert_must_call, assert_must_not_call
+from agentspec.assertions.count_assertions import assert_exactly, assert_at_least, assert_at_most
+from agentspec.assertions.order_assertions import assert_before, assert_after, assert_immediately_after
 
 
 

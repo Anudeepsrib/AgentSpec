@@ -127,7 +127,7 @@ function App() {
         id: "flight_booking_flow",
         name: "test_books_correct_flight",
         filename: "flight_booking_flow.json",
-        path: ".agentcontract/snapshots/flight_booking_flow.json",
+        path: ".agentspec/snapshots/flight_booking_flow.json",
         trace: {
           start_time: Date.now() / 1000 - 10,
           end_time: Date.now() / 1000,
@@ -142,7 +142,7 @@ function App() {
         id: "multi_agent_flow",
         name: "test_complex_mult_agent_workflow",
         filename: "multi_agent_flow.json",
-        path: ".agentcontract/snapshots/multi_agent_flow.json",
+        path: ".agentspec/snapshots/multi_agent_flow.json",
         trace: {
           start_time: Date.now() / 1000 - 5,
           end_time: Date.now() / 1000,
@@ -190,7 +190,7 @@ function App() {
             {loading ? (
               <div style={{ color: 'var(--text-muted)' }}>Loading traces...</div>
             ) : snapshots.length === 0 ? (
-              <div className="empty-state">No snapshots found in .agentcontract/snapshots</div>
+              <div className="empty-state">No snapshots found in .agentspec/snapshots</div>
             ) : (
               snapshots.map(snap => (
                 <div 

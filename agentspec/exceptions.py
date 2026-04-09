@@ -1,4 +1,4 @@
-"""Exceptions for agentcontract."""
+"""Exceptions for agentspec."""
 
 
 class ContractViolation(AssertionError):

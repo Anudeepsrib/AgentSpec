@@ -1,10 +1,10 @@
-"""Example: Testing an OpenAI-based flight booking agent with agentcontract."""
+"""Example: Testing an OpenAI-based flight booking agent with agentspec."""
 
 import json
 from typing import Any
 
-from agentcontract import contract, ContractRunner
-from agentcontract.chaos import ChaosInjector
+from agentspec import contract, ContractRunner
+from agentspec.chaos import ChaosInjector
 
 
 # Simulated OpenAI tool-calling agent

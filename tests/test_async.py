@@ -2,8 +2,8 @@ import asyncio
 import pytest
 from typing import Any
 
-from agentcontract.contract import contract, ContractRunner
-from agentcontract.exceptions import ToolNotCalled
+from agentspec.contract import contract, ContractRunner
+from agentspec.exceptions import ToolNotCalled
 
 async def async_tool(x: int) -> int:
     await asyncio.sleep(0.01)

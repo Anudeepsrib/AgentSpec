@@ -7,4 +7,4 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Note: pytest plugin is auto-registered via pyproject.toml [project.entry-points."pytest11"]
-# Do NOT add pytest_plugins = ["agentcontract.pytest_plugin"] here — it causes double-registration.
+# Do NOT add pytest_plugins = ["agentspec.pytest_plugin"] here — it causes double-registration.

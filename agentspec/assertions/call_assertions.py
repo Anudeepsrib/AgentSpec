@@ -1,8 +1,8 @@
 """Standalone call assertion functions."""
 
 
-from agentcontract.interceptor import AgentTrace
-from agentcontract.exceptions import ToolNotCalled, ToolCalledUnexpectedly
+from agentspec.interceptor import AgentTrace
+from agentspec.exceptions import ToolNotCalled, ToolCalledUnexpectedly
 
 
 def assert_must_call(trace: AgentTrace, tool_name: str, agent_id: str | None = None) -> None:

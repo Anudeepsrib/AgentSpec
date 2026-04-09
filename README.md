@@ -3,9 +3,6 @@
 <img src="docs/logo.png" width="120" style="margin-bottom: 20px" />
 
 # AgentSpec
-**The industry standard for deterministic, resilient, and blazing-fast Agentic testing.**
-
-<img src="docs/hero.png" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: 20px 0;" />
 
 [![PyPI version](https://badge.fury.io/py/agentcontract.svg)](https://pypi.org/project/agentcontract/)
 [![Python versions](https://img.shields.io/pypi/pyversions/agentcontract.svg)](https://pypi.org/project/agentcontract/)
@@ -26,16 +23,9 @@
 
 ## 🌟 What is AgentSpec?
 
-**AgentSpec** (via the `agentcontract` package) is the first deterministic testing framework for AI agents. Unlike traditional agent evaluation tools that score LLM output quality using probabilistic metrics, AgentSpec provides **deterministic contracts** that assert exactly what your agent MUST do, MUST NOT do, and MUST do in what order.
+AgentSpec is the first deterministic testing framework for AI agents. Unlike traditional agent evaluation tools that score LLM output quality using probabilistic metrics, AgentSpec provides deterministic contracts that assert exactly what your agent MUST do, MUST NOT do, and MUST do in what order.
 
-Think of it as:
-- **Pact** for agent/API contracts — but for tool calls.
-- **Jest snapshots** — but for agent trajectories.
-- **Chaos engineering** — but for agent resilience testing.
-
----
-
-## ⚡️ Key Features (v0.3.0)
+## ⚡️ Key Features
 
 | Feature | Description |
 |:---|:---|
@@ -46,11 +36,9 @@ Think of it as:
 | 👯‍♀️ **Multi-Agent Tracking** | Isolate concurrent interactions using `agent_id` to prevent cross-contamination. |
 | 🌩 **Advanced Chaos Injection** | Simulate tool failures, latency spikes, response corruption, or random stochastic chaos. |
 | 📸 **Trajectory Snapshots** | Capture "golden" paths as JSON to lock down complex multi-step behaviors. |
-| 💎 **Trace Visualizer UI** | Beautiful local web dashboard to visually trace agent execution via `agentcontract ui`. |
+| 💎 **Trace Visualizer UI** | Beautiful local web dashboard to visually trace agent execution via `agentspec ui`. |
 | 🔌 **Ecosystem Ready** | Native adapters for OpenAI, Anthropic, LangChain/LangGraph, and simple Custom adapters. |
 | 🚀 **CI Integration** | Specialized GitHub Actions and JSONL export for seamless CI/CD artifact collection. |
-
----
 
 ## 🚀 Quick Start
 
@@ -59,11 +47,12 @@ Think of it as:
 ```bash
 pip install agentcontract
 ```
+*Note: Package name is retained as `agentcontract` for backward compatibility. Import it as `agentspec` in your code.*
 
 ### Your First Contract Test
 
 ```python
-from agentcontract import contract, ContractRunner
+from agentspec import contract, ContractRunner
 
 @contract("flight_booking")
 def test_books_correct_flight():
@@ -89,13 +78,11 @@ def test_books_correct_flight():
 
 ```bash
 # Run tests and export to JSONL for CI
-agentcontract run tests/ -o results.jsonl
+agentspec run tests/ -o results.jsonl
 
 # Visualize traces locally
-agentcontract ui
+agentspec ui
 ```
-
----
 
 ## 🧩 Architectural Contracts
 
@@ -111,12 +98,12 @@ agentcontract ui
 ### Powerful Assertion Syntax
 
 ```python
-# Call/Order constraints
+# Call and Order constraints
 result.must_call("search_flights")
 result.must_not_call("cancel_booking")
 result.must_call("auth").before("query").before("update")
 
-# Argument subsets & Regex matches
+# Argument subsets and Regex matches
 result.must_call("search").with_args_containing(query="flights to New York")
 result.must_call("validate_email").with_args_matching(email=r"^[\w.-]+@[\w.-]+\.\w+$")
 
@@ -127,14 +114,12 @@ result.must_call("transfer", agent_id="banking_agent").immediately_after("auth",
 result.tool_call_count("api_call").at_most(5)
 ```
 
----
-
 ## 🌪 Chaos Testing
 
 Test how your agent handles real-world failures:
 
 ```python
-from agentcontract.chaos import ChaosInjector
+from agentspec.chaos import ChaosInjector
 
 chaos = ChaosInjector()
 chaos.fail_tool("search_flights", after_calls=1, error="RateLimitError")
@@ -144,29 +129,25 @@ result = runner.run(agent=my_agent, input="Book flight", chaos=chaos)
 result.must_call("search_flights").at_least(2) # Verify retry logic
 ```
 
----
-
 ## 📈 Roadmap
 
-### [0.4.0] — Policy Engine
+### 0.4.0 — Policy Engine
 - Define global behavioral policies across all agents.
 - Drift detection: detect when agent behavior deviates from historical benchmarks.
 - OTLP export for distributed tracing integration.
 
-### [1.0.0] — Horizon
+### 1.0.0 — Horizon
 - Stable API guarantee.
 - Enterprise telemetry endpoints.
 - Visual Contract Editor.
-
----
 
 ## 🤝 Contributing
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ```bash
-git clone https://github.com/Anudeepsrib/AgentContract.git
-cd AgentContract
+git clone https://github.com/Anudeepsrib/AgentSpec.git
+cd AgentSpec
 pip install -e ".[dev,all]"
 pytest tests/
 ```
@@ -179,6 +160,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Built by Agents. For Agents.**
 
-[Documentation](https://agentspec.dev) • [Issue Tracker](https://github.com/Anudeepsrib/AgentContract/issues)
+[Documentation](https://agentspec.dev) • [Issue Tracker](https://github.com/Anudeepsrib/AgentSpec/issues)
 
 </div>

@@ -9,7 +9,7 @@ Run:  python examples/multi_agent_example.py
 Test: pytest examples/multi_agent_example.py -v
 """
 
-from agentcontract import contract, ContractRunner, ContractSuite
+from agentspec import contract, ContractRunner, ContractSuite
 
 
 # ── Simulated multi-agent system ────────────────────────────────────────────

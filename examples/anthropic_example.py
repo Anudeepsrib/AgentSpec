@@ -1,8 +1,8 @@
-"""Example: Testing an Anthropic-based research agent with agentcontract."""
+"""Example: Testing an Anthropic-based research agent with agentspec."""
 
 from typing import Any
 
-from agentcontract import contract, ContractRunner
+from agentspec import contract, ContractRunner
 
 
 class ResearchAgent:

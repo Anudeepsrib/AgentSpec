@@ -1,8 +1,8 @@
-site_name: AgentSpec
-site_description: Deterministic testing framework for AI agents
+site_name: AgentSpec — Deterministic Testing for AI Agents
+site_description: AgentSpec enforces deterministic contracts on AI agent behavior. Test tool call ordering, argument accuracy, and chaos resilience. No vibes required.
 site_url: https://agentspec.dev
-repo_url: https://github.com/Anudeepsrib/AgentContract
-repo_name: Anudeepsrib/AgentContract
+repo_url: https://github.com/Anudeepsrib/AgentSpec
+repo_name: Anudeepsrib/AgentSpec
 
 theme:
   name: material
@@ -83,6 +83,6 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/Anudeepsrib/AgentContract
+      link: https://github.com/Anudeepsrib/AgentSpec
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/agentcontract/

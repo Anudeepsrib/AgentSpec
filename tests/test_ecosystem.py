@@ -8,10 +8,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentcontract import ContractRunner, ContractSuite
-from agentcontract.interceptor import TraceInterceptor
-from agentcontract.adapters.anthropic import AnthropicAdapter
-from agentcontract.adapters.langchain import LangChainAdapter, AgentSpecCallbackHandler
+from agentspec import ContractRunner, ContractSuite
+from agentspec.interceptor import TraceInterceptor
+from agentspec.adapters.anthropic import AnthropicAdapter
+from agentspec.adapters.langchain import LangChainAdapter, AgentSpecCallbackHandler
 
 
 # ── Anthropic Adapter Tests ─────────────────────────────────────────────────

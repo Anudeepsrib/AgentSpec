@@ -2,9 +2,9 @@
 
 import pytest
 
-from agentcontract.interceptor import AgentTrace
-from agentcontract.result import AgentResult
-from agentcontract.exceptions import (
+from agentspec.interceptor import AgentTrace
+from agentspec.result import AgentResult
+from agentspec.exceptions import (
     OrderViolation,
     ArgMismatch,
     CountMismatch,

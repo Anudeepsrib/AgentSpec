@@ -5,8 +5,8 @@ Production environments are messy. APIs rate-limit, databases go down, third-par
 ## Quick Example
 
 ```python
-from agentcontract import ContractRunner
-from agentcontract.chaos import ChaosInjector
+from agentspec import ContractRunner
+from agentspec.chaos import ChaosInjector
 
 chaos = ChaosInjector()
 chaos.fail_tool("search_flights", after_calls=1, error="RateLimitError")

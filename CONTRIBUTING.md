@@ -37,9 +37,10 @@ By participating in this project, you agree to abide by our Code of Conduct (sta
 We recommend using a virtual environment:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+git clone https://github.com/Anudeepsrib/AgentSpec.git
+cd AgentSpec
 pip install -e ".[dev,all]"
+pytest tests/
 ```
 
 ### Running Tests
@@ -49,7 +50,7 @@ pip install -e ".[dev,all]"
 pytest tests/
 
 # With coverage
-pytest --cov=agentcontract tests/
+pytest --cov=agentspec tests/
 ```
 
 ## Questions?

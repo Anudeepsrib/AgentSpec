@@ -2,8 +2,8 @@ import pytest
 import asyncio
 from typing import Any
 
-from agentcontract.chaos.injector import ChaosInjector
-from agentcontract.contract import ContractRunner
+from agentspec.chaos.injector import ChaosInjector
+from agentspec.contract import ContractRunner
 
 def normal_tool(x: int) -> int:
     return x * 2

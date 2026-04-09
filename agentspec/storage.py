@@ -5,7 +5,7 @@ agent trace. This gives developers a historical audit trail of all contract
 executions without requiring any external infrastructure.
 
 Usage:
-    from agentcontract.storage import RunLogger
+    from agentspec.storage import RunLogger
 
     logger = RunLogger()
     logger.log(trace)           # Append trace to current run file
@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agentcontract.interceptor import AgentTrace
+from agentspec.interceptor import AgentTrace
 
 
 class RunLogger:

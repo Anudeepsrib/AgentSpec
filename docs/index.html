@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgentSpec | Deterministic Agent Testing</title>
+    <meta name="description" content="AgentSpec enforces deterministic contracts on AI agent behavior. Test tool call ordering, argument accuracy, and chaos resilience. No vibes required.">
+    <title>AgentSpec — Deterministic Testing for AI Agents</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -18,7 +19,7 @@
                 <span class="brand-text">AgentSpec</span>
             </div>
             <div class="nav-links">
-                <a href="https://github.com/agentcontract/agentcontract">GitHub</a>
+                <a href="https://github.com/Anudeepsrib/AgentSpec">GitHub</a>
                 <a href="#features">Features</a>
                 <a href="#" class="cta-button">Documentation</a>
             </div>
@@ -29,8 +30,8 @@
         <div class="hero-content">
             <div class="hero-text">
                 <div class="badge">v0.2.0 is live</div>
-                <h1 class="hero-headline">The first agent testing framework built around <span class="text-gradient">deterministic contracts</span>.</h1>
-                <p class="hero-subheadline">Stop scoring your agent's output quality using probabilistic vibes. Start enforcing precisely what your agent MUST do, MUST NOT do, and in what order, using 100% deterministic code.</p>
+                <h1 class="hero-headline">Stop vibe-checking your agents.</h1>
+                <p class="hero-subheadline">AgentSpec gives you deterministic contracts for tool calls, execution order, and chaos resilience.</p>
                 <div class="hero-actions">
                     <a href="#" class="btn-primary">Get Started in 2 Minutes</a>
                     <div class="terminal-install">pip install agentcontract</div>
@@ -41,7 +42,7 @@
                     <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
                     <span class="filename">test_booking.py</span>
                 </div>
-                <pre><code class="language-python">from agentcontract import contract, ContractRunner
+                <pre><code class="language-python">from agentspec import contract, ContractRunner
 
 @contract("flight_booking")
 async def test_books_correct_flight():
