@@ -26,11 +26,11 @@ class RunLogger:
     """Persists contract execution traces as JSONL files.
 
     Each run session creates entries in a date-stamped file under
-    ``.agentcontract/runs/``. This provides a zero-config audit trail
+    ``.agentspec/runs/``. This provides a zero-config audit trail
     without requiring databases or external services.
     """
 
-    DEFAULT_DIR = ".agentcontract/runs"
+    DEFAULT_DIR = ".agentspec/runs"
 
     def __init__(
         self,

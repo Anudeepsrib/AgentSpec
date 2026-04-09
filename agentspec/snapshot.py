@@ -19,7 +19,7 @@ console = Console()
 class SnapshotManager:
     """Manages snapshot recording, storage, and comparison."""
 
-    DEFAULT_DIR = ".agentcontract/snapshots"
+    DEFAULT_DIR = ".agentspec/snapshots"
 
     def __init__(self, snapshot_dir: str | None = None) -> None:
         self.snapshot_dir = Path(snapshot_dir or self.DEFAULT_DIR)
