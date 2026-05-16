@@ -2,6 +2,7 @@
 
 import json
 import tempfile
+from pathlib import Path
 
 import pytest
 
@@ -107,3 +108,22 @@ def test_snapshot_list_and_paths() -> None:
         snapshots = mgr.list_snapshots()
         assert len(snapshots) == 2
         assert all(s.suffix == ".json" for s in snapshots)
+
+
+def test_snapshot_path_traversal_prevention():
+    """Snapshot names with .. or special chars must not escape the snapshot dir."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        mgr = SnapshotManager(tmpdir)
+        trace = AgentTrace()
+        # Attempt traversal
+        bad_names = ["../../../etc/passwd", "..\\..\\windows\\system", "foo/../../bar", "a b/c"]
+        for name in bad_names:
+            path = mgr._get_snapshot_path(name)
+            # Must be inside tmpdir/snapshots (the dir)
+            assert str(path).startswith(str(Path(tmpdir)))
+            assert ".." not in path.name
+            assert "/" not in path.name and "\\" not in path.name
+        # Still functions
+        p = mgr.save("..//traversal_attempt", trace)
+        assert p.exists()
+        assert "traversal_attempt" in p.name

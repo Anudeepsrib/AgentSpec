@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +21,7 @@ console = Console()
 class SnapshotManager:
     """Manages snapshot recording, storage, and comparison."""
 
-    DEFAULT_DIR = ".agentspec/snapshots"
+    DEFAULT_DIR = ".agentcontract/snapshots"
 
     def __init__(self, snapshot_dir: str | None = None) -> None:
         self.snapshot_dir = Path(snapshot_dir or self.DEFAULT_DIR)
@@ -30,8 +32,11 @@ class SnapshotManager:
         self.snapshot_dir.mkdir(parents=True, exist_ok=True)
 
     def _get_snapshot_path(self, name: str) -> Path:
-        """Get the file path for a snapshot."""
-        safe_name = name.replace("/", "_").replace("\\", "_").replace(" ", "_")
+        """Get the file path for a snapshot. Prevents path traversal."""
+        # Strict sanitization: only safe chars, no .. sequences, limit length
+        safe_name = re.sub(r"[^a-zA-Z0-9_\-]", "_", name)
+        safe_name = re.sub(r"\.{2,}", "_", safe_name)  # collapse ..
+        safe_name = safe_name.strip("_")[:120] or "snapshot"
         return self.snapshot_dir / f"{safe_name}.json"
 
     def exists(self, name: str) -> bool:
@@ -65,7 +70,11 @@ class SnapshotManager:
         Raises:
             SnapshotMismatch: If traces don't match
         """
-        if update or not self.exists(name):
+        env_update = (
+            os.environ.get("AGENTCONTRACT_UPDATE_SNAPSHOTS") == "1"
+            or os.environ.get("AGENTSPEC_UPDATE_SNAPSHOTS") == "1"
+        )
+        if update or env_update or not self.exists(name):
             path = self.save(name, trace)
             console.print(f"[green]Snapshot saved: {path}[/green]")
             return

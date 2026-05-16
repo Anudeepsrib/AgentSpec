@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import functools
 import inspect
+import os
 from collections.abc import Callable
 from typing import Any
 
@@ -26,6 +27,12 @@ class ContractRunner:
         persist: bool = True,
         sanitize_keys: list[str] | None = None,
     ) -> None:
+        # Respect CLI / env override for no-persist (sensitive environments)
+        if (
+            os.environ.get("AGENTCONTRACT_NO_PERSIST") == "1"
+            or os.environ.get("AGENTSPEC_NO_PERSIST") == "1"
+        ):
+            persist = False
         self._interceptor = TraceInterceptor(sanitize_keys=sanitize_keys)
         self._snapshot_manager = SnapshotManager(snapshot_dir)
         self._adapter = self._resolve_adapter(adapter)
@@ -39,21 +46,30 @@ class ContractRunner:
         if isinstance(adapter, BaseAdapter):
             return adapter
 
-        # Import adapters lazily
-        if adapter == "openai":
-            from agentspec.adapters.openai import OpenAIAdapter
+        # Import adapters lazily; provide helpful error if optional dep missing
+        install_hint = (
+            f"To use the '{adapter}' adapter, install the optional extra:\n"
+            f"  pip install 'agentcontract[{adapter}]'   (or 'agentspec[{adapter}]')"
+        )
+        try:
+            if adapter == "openai":
+                from agentspec.adapters.openai import OpenAIAdapter
 
-            return OpenAIAdapter(self._interceptor)
-        elif adapter == "anthropic":
-            from agentspec.adapters.anthropic import AnthropicAdapter
+                return OpenAIAdapter(self._interceptor)
+            elif adapter == "anthropic":
+                from agentspec.adapters.anthropic import AnthropicAdapter
 
-            return AnthropicAdapter(self._interceptor)
-        elif adapter == "langchain":
-            from agentspec.adapters.langchain import LangChainAdapter
+                return AnthropicAdapter(self._interceptor)
+            elif adapter == "langchain":
+                from agentspec.adapters.langchain import LangChainAdapter
 
-            return LangChainAdapter(self._interceptor)
+                return LangChainAdapter(self._interceptor)
+        except ImportError as exc:
+            raise ImportError(
+                f"Missing dependency for {adapter} adapter: {exc}\n{install_hint}"
+            ) from exc
 
-        raise ValueError(f"Unknown adapter: {adapter}")
+        raise ValueError(f"Unknown adapter: {adapter}. {install_hint}")
 
     def run(
         self,

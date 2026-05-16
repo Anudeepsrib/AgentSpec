@@ -6,7 +6,7 @@
 
 [![PyPI version](https://badge.fury.io/py/agentcontract.svg)](https://pypi.org/project/agentcontract/)
 [![Python versions](https://img.shields.io/pypi/pyversions/agentcontract.svg)](https://pypi.org/project/agentcontract/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -23,22 +23,26 @@
 
 ## 🌟 What is AgentSpec?
 
-AgentSpec is the first deterministic testing framework for AI agents. Unlike traditional agent evaluation tools that score LLM output quality using probabilistic metrics, AgentSpec provides deterministic contracts that assert exactly what your agent MUST do, MUST NOT do, and MUST do in what order.
+AgentSpec is a deterministic contract testing framework for AI agents. It provides binary pass/fail assertions for tool calls, ordering, arguments, and counts—unlike probabilistic LLM output scoring.
 
 ## ⚡️ Key Features
 
 | Feature | Description |
 |:---|:---|
-| 🛡 **Deterministic Assertions** | Test tool executions, parameter accuracy, strict ordering, and thresholds with 100% determinism. |
+| 🛡 **Deterministic Assertions** | Binary pass/fail assertions for tool call ordering, exact arguments, counts, and sequences. |
 | 🧪 **ContractSuites** | Group related contracts with shared configuration, sanitization rules, and batch execution. |
-| 🛡 **PII Sanitization** | Automatically redact sensitive tool arguments (e.g., passwords, keys) from traces for GDPR compliance. |
+| 🛡 **PII Sanitization** | Configurable sensitive-field redaction (password, token, api_key, etc.) for privacy-aware trace logging. Not a substitute for legal compliance review. |
 | ⏱ **Async & Sync Support** | Native support for `.arun()` and `pytest-asyncio` workflows. |
 | 👯‍♀️ **Multi-Agent Tracking** | Isolate concurrent interactions using `agent_id` to prevent cross-contamination. |
 | 🌩 **Advanced Chaos Injection** | Simulate tool failures, latency spikes, response corruption, or random stochastic chaos. |
 | 📸 **Trajectory Snapshots** | Capture "golden" paths as JSON to lock down complex multi-step behaviors. |
 | 💎 **Trace Visualizer UI** | Beautiful local web dashboard to visually trace agent execution via `agentspec ui`. |
-| 🔌 **Ecosystem Ready** | Native adapters for OpenAI, Anthropic, LangChain/LangGraph, and simple Custom adapters. |
+| 🔌 **Ecosystem Adapters** | Optional adapter hooks for OpenAI, Anthropic, and LangChain/LangGraph-style agents. Install extras as needed. |
 | 🚀 **CI Integration** | Specialized GitHub Actions and JSONL export for seamless CI/CD artifact collection. |
+
+## ⚠️ Project Status
+
+**Beta / Experimental.** AgentSpec is under active development. APIs are stabilizing but may change. Use in production at your own risk. We welcome feedback via GitHub issues.
 
 ## 🚀 Quick Start
 
@@ -47,7 +51,16 @@ AgentSpec is the first deterministic testing framework for AI agents. Unlike tra
 ```bash
 pip install agentcontract
 ```
-*Note: Package name is retained as `agentcontract` for backward compatibility. Import it as `agentspec` in your code.*
+*Note: Package name on PyPI is `agentcontract` for backward compatibility with older installations. The recommended import is `import agentspec` (or `from agentspec import ...`). A deprecation shim allows `import agentcontract`.*
+
+### What AgentSpec Does NOT Test
+- Semantic quality, correctness, or "vibes" of LLM-generated text or reasoning
+- Model safety, hallucination rates, or adversarial robustness
+- Side effects or correctness of external tools/APIs you call
+- Legal, regulatory, or compliance certification (e.g., GDPR, SOC2)
+- Performance under load or production cost/latency
+
+Use AgentSpec alongside evals, observability, and human review.
 
 ### Your First Contract Test
 

@@ -1,6 +1,6 @@
 site_name: AgentSpec — Deterministic Testing for AI Agents
 site_description: AgentSpec enforces deterministic contracts on AI agent behavior. Test tool call ordering, argument accuracy, and chaos resilience. No vibes required.
-site_url: https://agentspec.dev
+site_url: https://github.com/Anudeepsrib/AgentSpec  # agentspec.dev domain is for sale / planned for future
 repo_url: https://github.com/Anudeepsrib/AgentSpec
 repo_name: Anudeepsrib/AgentSpec
 
@@ -47,12 +47,7 @@ nav:
     - Snapshot Testing: guides/snapshots.md
     - CI Integration: guides/ci-integration.md
     - Custom Adapters: guides/custom-adapters.md
-  - API Reference:
-    - ContractRunner: api/contract.md
-    - AgentResult: api/result.md
-    - Assertions: api/assertions.md
-    - ChaosInjector: api/chaos.md
-    - Storage: api/storage.md
+  - API Reference: https://github.com/Anudeepsrib/AgentSpec/tree/main/agentspec (source)
   - Contributing: contributing.md
 
 markdown_extensions:

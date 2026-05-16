@@ -138,6 +138,21 @@ class TraceInterceptor:
     """Base class for intercepting tool calls from different frameworks."""
 
     REDACTED = "[REDACTED]"
+    DEFAULT_SENSITIVE_KEYS: set[str] = {
+        "password",
+        "token",
+        "api_key",
+        "apikey",
+        "authorization",
+        "secret",
+        "passwd",
+        "private_key",
+        "access_token",
+        "refresh_token",
+        "credit_card",
+        "ssn",
+        "social_security",
+    }
 
     def __init__(
         self,
@@ -146,7 +161,11 @@ class TraceInterceptor:
     ) -> None:
         self.trace = AgentTrace()
         self._active: bool = False
-        self._sanitize_keys: set[str] = set(sanitize_keys or [])
+        # Always apply defaults for privacy; user-provided extend the set.
+        # Pass empty list [] explicitly to disable all redaction.
+        base = self.DEFAULT_SENSITIVE_KEYS if sanitize_keys is None else set(sanitize_keys or [])
+        provided = set(sanitize_keys or [])
+        self._sanitize_keys: set[str] = base | provided
 
     def start(self) -> None:
         """Start intercepting."""
@@ -161,7 +180,7 @@ class TraceInterceptor:
             self.trace.finish()
 
     def _sanitize_args(self, args: dict[str, Any]) -> dict[str, Any]:
-        """Redact sensitive keys from tool call arguments.
+        """Redact sensitive keys from tool call arguments (recursive for nested dicts).
 
         Args:
             args: Original tool call arguments.
@@ -171,7 +190,17 @@ class TraceInterceptor:
         """
         if not self._sanitize_keys:
             return args
-        return {k: self.REDACTED if k in self._sanitize_keys else v for k, v in args.items()}
+        return {k: self._sanitize_value(k, v) for k, v in args.items()}
+
+    def _sanitize_value(self, key: str, value: Any) -> Any:
+        """Recursively sanitize a single value (dict/list or scalar)."""
+        if isinstance(value, dict):
+            return {k: self._sanitize_value(k, v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [self._sanitize_value("", item) for item in value]
+        if isinstance(key, str) and key.lower() in self._sanitize_keys:
+            return self.REDACTED
+        return value
 
     def record(
         self,

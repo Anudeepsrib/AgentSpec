@@ -23,7 +23,7 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -57,6 +57,11 @@ all = [
     "anthropic>=0.18",
     "langchain>=0.1.0",
     "langchain-core>=0.1.0",
+]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.26",
 ]
 
 [project.scripts]
@@ -97,6 +102,7 @@ ignore = ["D100", "D104", "D107", "E501"]
 "examples/*" = ["D", "E701"]
 "agentspec/exceptions.py" = ["N818", "D105"]
 "agentcontract/__init__.py" = ["E402"]
+"agentspec/cli.py" = ["N802"]  # do_GET is required by http.server override
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

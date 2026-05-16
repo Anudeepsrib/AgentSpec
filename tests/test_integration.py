@@ -113,8 +113,21 @@ class TestSanitization:
         assert call.args["password"] == "[REDACTED]"
         assert call.args["ssn"] == "[REDACTED]"
 
-    def test_no_sanitize_keys_passes_through(self) -> None:
+    def test_default_sanitize_redacts_known_pii(self) -> None:
+        """By default, known sensitive keys (password, token, api_key, ssn, etc.) are redacted."""
         interceptor = TraceInterceptor()
+        interceptor.start()
+        interceptor.record("tool", {"password": "secret123", "normal": "ok", "api_key": "sk-xxx"})
+        interceptor.stop()
+
+        call = interceptor.trace.tool_calls[0]
+        assert call.args["password"] == "[REDACTED]"
+        assert call.args["api_key"] == "[REDACTED]"
+        assert call.args["normal"] == "ok"
+
+    def test_explicit_empty_list_disables_sanitize(self) -> None:
+        """Passing sanitize_keys=[] explicitly disables all redaction."""
+        interceptor = TraceInterceptor(sanitize_keys=[])
         interceptor.start()
         interceptor.record("tool", {"password": "secret"})
         interceptor.stop()

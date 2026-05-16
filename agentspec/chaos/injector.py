@@ -71,8 +71,7 @@ class ChaosInjector:
         self._rules: dict[str, ChaosRule] = {}
         self._seed = seed
         self._random_failure_prob: float = 0.0
-        if seed is not None:
-            random.seed(seed)
+        self._rng = random.Random(seed) if seed is not None else random.Random()
 
     def fail_tool(
         self,
@@ -180,7 +179,7 @@ class ChaosInjector:
                 if rule.should_corrupt_now():
                     return rule.corrupt_response
 
-            if self._random_failure_prob > 0 and random.random() < self._random_failure_prob:
+            if self._random_failure_prob > 0 and self._rng.random() < self._random_failure_prob:
                 raise RuntimeError("Random chaos injected")
 
             # Normal execution
@@ -205,7 +204,7 @@ class ChaosInjector:
                 if rule.should_corrupt_now():
                     return rule.corrupt_response
 
-            if self._random_failure_prob > 0 and random.random() < self._random_failure_prob:
+            if self._random_failure_prob > 0 and self._rng.random() < self._random_failure_prob:
                 raise RuntimeError("Random chaos injected")
 
             return await original_func(*args, **kwargs)

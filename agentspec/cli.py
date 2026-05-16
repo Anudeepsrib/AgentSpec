@@ -85,14 +85,21 @@ def run(
 
         from agentspec.storage import RunLogger
 
-        logger = RunLogger()
-        logs = logger.list_logs()
-        if logs:
-            latest = logs[-1]
-            shutil.copy2(str(latest), output_path)
-            console.print(f"[green]Results exported to {output_path}[/green]")
-        else:
-            console.print("[yellow]No run logs to export[/yellow]")
+        out_path = Path(output_path)
+        try:
+            if out_path.parent and not out_path.parent.exists():
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+            logger = RunLogger()
+            logs = logger.list_logs()
+            if logs:
+                latest = logs[-1]
+                shutil.copy2(str(latest), str(out_path))
+                console.print(f"[green]Results exported to {output_path}[/green]")
+            else:
+                console.print("[yellow]No run logs to export[/yellow]")
+        except Exception as exc:
+            console.print(f"[red]Failed to export results to {output_path}: {exc}[/red]")
+            sys.exit(1)
 
     sys.exit(result.returncode)
 
@@ -273,7 +280,9 @@ def ui(port: int, host: str) -> None:
             if self.path == "/api/snapshots":
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
-                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header(
+                    "Access-Control-Allow-Origin", f"http://{host}:{port}"
+                )  # local UI only; change host at your own risk
                 self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
                 self.end_headers()
 
