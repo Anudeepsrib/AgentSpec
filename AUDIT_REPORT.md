@@ -10,12 +10,11 @@
 - Python import: `agentspec`
 - Primary CLI: `agentspec`
 - PyPI distribution: `agentspec-contracts`
-- Deprecated compatibility alias: `agentcontract`
 - License: Apache-2.0
 - Version: `0.3.0`
 
-The distribution name changed because the `agentspec` and `agentcontract` PyPI
-names are already occupied by unrelated projects. Public install docs now use
+The distribution name changed because the `agentspec` PyPI name is already
+occupied by an unrelated project. Public install docs now use
 `agentspec-contracts`.
 
 ## Readiness Improvements
@@ -26,8 +25,8 @@ names are already occupied by unrelated projects. Public install docs now use
   and repository-hosted documentation URLs.
 - Runtime state defaults to `.agentspec/` for runs and snapshots.
 - `AGENTSPEC_*` environment variables are the documented names.
-- Legacy `AGENTCONTRACT_*` variables and `agentcontract` import/CLI aliases
-  remain supported for compatibility.
+- Pre-beta `agentcontract` import/CLI aliases and `AGENTCONTRACT_*` variables
+  were removed to avoid public API confusion.
 - Changelog, contributing guide, roadmap, security docs, and MkDocs navigation
   are updated.
 - LangChain and LangGraph adapter demos were added with no external API keys.
@@ -40,7 +39,7 @@ names are already occupied by unrelated projects. Public install docs now use
 - `ruff check .`
 - `ruff format --check .`
 - `pytest tests/ -q`
-- `python -m compileall -q agentspec agentcontract tests examples`
+- `python -m compileall -q agentspec tests examples`
 - `python examples/quickstart.py`
 - `pytest examples/test_contract_demos.py -q -rx`
 - `python examples/langchain_adapter_example.py`

@@ -62,16 +62,13 @@ def run(
     # Set snapshot update environment variable
     if snapshot_update:
         os.environ["AGENTSPEC_UPDATE_SNAPSHOTS"] = "1"
-        os.environ["AGENTCONTRACT_UPDATE_SNAPSHOTS"] = "1"
         console.print("[yellow]Snapshot update mode enabled[/yellow]")
 
     if adapter:
         os.environ["AGENTSPEC_ADAPTER"] = adapter
-        os.environ["AGENTCONTRACT_ADAPTER"] = adapter
 
     if no_persist:
         os.environ["AGENTSPEC_NO_PERSIST"] = "1"
-        os.environ["AGENTCONTRACT_NO_PERSIST"] = "1"
         console.print("[dim]Run log persistence disabled[/dim]")
 
     # Add our plugin
@@ -137,7 +134,6 @@ def snapshot_update(test_path: str, update_all: bool) -> None:
     ]
 
     os.environ["AGENTSPEC_UPDATE_SNAPSHOTS"] = "1"
-    os.environ["AGENTCONTRACT_UPDATE_SNAPSHOTS"] = "1"
 
     console.print("[yellow]Updating all snapshots...[/yellow]")
     result = subprocess.run(cmd, cwd=os.getcwd())

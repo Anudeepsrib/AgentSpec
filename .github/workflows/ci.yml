@@ -40,15 +40,15 @@ jobs:
 
       - name: Compile all Python
         run: |
-          python -m compileall -q agentspec agentcontract tests examples
+          python -m compileall -q agentspec tests examples
 
       - name: Type check with mypy
         run: |
-          mypy agentspec/ agentcontract/ || true  # non-blocking until types mature
+          mypy agentspec/ || true  # non-blocking until types mature
 
       - name: Run tests
         run: |
-          pytest tests/ -v --cov=agentspec --cov=agentcontract --cov-report=xml
+          pytest tests/ -v --cov=agentspec --cov-report=xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3

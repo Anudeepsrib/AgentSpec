@@ -66,7 +66,6 @@ docs = [
 
 [project.scripts]
 agentspec = "agentspec.cli:cli"
-agentcontract = "agentspec.cli:cli"
 
 [project.entry-points."pytest11"]
 "agentspec.pytest_plugin" = "agentspec.pytest_plugin"
@@ -79,7 +78,7 @@ Changelog = "https://github.com/Anudeepsrib/AgentSpec/blob/main/CHANGELOG.md"
 Issues = "https://github.com/Anudeepsrib/AgentSpec/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["agentspec", "agentcontract"]
+packages = ["agentspec"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "dashboard/dist" = "agentspec/ui_dist"
@@ -87,7 +86,6 @@ packages = ["agentspec", "agentcontract"]
 [tool.hatch.build.targets.sdist]
 include = [
     "/agentspec",
-    "/agentcontract",
     "/README.md",
     "/LICENSE",
     "/pyproject.toml",
@@ -115,7 +113,6 @@ ignore = ["D100", "D104", "D107", "E501"]
 "tests/*" = ["D"]
 "examples/*" = ["D", "E701"]
 "agentspec/exceptions.py" = ["N818", "D105"]
-"agentcontract/__init__.py" = ["E402"]
 "agentspec/cli.py" = ["N802"]  # do_GET is required by http.server override
 
 [tool.ruff.lint.pydocstyle]

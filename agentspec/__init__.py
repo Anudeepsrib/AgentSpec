@@ -19,10 +19,7 @@ from agentspec.storage import RunLogger
 try:
     __version__ = version("agentspec-contracts")
 except PackageNotFoundError:
-    try:
-        __version__ = version("agentcontract")
-    except PackageNotFoundError:
-        __version__ = "0.0.0-dev"
+    __version__ = "0.0.0-dev"
 
 __all__ = [
     "contract",

@@ -17,17 +17,14 @@ and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ### Changed
 - The canonical PyPI distribution metadata now uses `agentspec-contracts`
-  because `agentspec` and `agentcontract` are already occupied on PyPI by
-  unrelated projects.
+  because `agentspec` is already occupied on PyPI by an unrelated project.
 - The canonical import and CLI remain `agentspec`.
 - Local trace and snapshot state now defaults to `.agentspec/`.
 - README and docs now consistently describe the Apache-2.0 license.
 
-### Deprecated
-- `agentcontract` import and CLI aliases remain as compatibility shims, but new
-  docs and examples use `agentspec`.
-- Legacy `AGENTCONTRACT_*` environment variables are still honored. New docs use
-  `AGENTSPEC_*`.
+### Removed
+- Removed the pre-beta `agentcontract` import shim and CLI alias.
+- Removed support for legacy `AGENTCONTRACT_*` environment variables.
 
 ## [0.2.0] - 2026-04-08
 

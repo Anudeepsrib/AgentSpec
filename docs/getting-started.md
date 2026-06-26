@@ -14,8 +14,8 @@ Import the library as `agentspec`:
 from agentspec import ContractRunner, contract
 ```
 
-The `agentspec` and `agentcontract` PyPI names are owned by unrelated projects,
-so AgentSpec's distribution is `agentspec-contracts`.
+The `agentspec` PyPI name is owned by an unrelated project, so AgentSpec's
+distribution is `agentspec-contracts`.
 
 ## Framework-Specific Extras
 

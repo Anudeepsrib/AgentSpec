@@ -28,10 +28,7 @@ class ContractRunner:
         sanitize_keys: list[str] | None = None,
     ) -> None:
         # Respect CLI / env override for no-persist (sensitive environments)
-        if (
-            os.environ.get("AGENTCONTRACT_NO_PERSIST") == "1"
-            or os.environ.get("AGENTSPEC_NO_PERSIST") == "1"
-        ):
+        if os.environ.get("AGENTSPEC_NO_PERSIST") == "1":
             persist = False
         self._interceptor = TraceInterceptor(sanitize_keys=sanitize_keys)
         self._snapshot_manager = SnapshotManager(snapshot_dir)

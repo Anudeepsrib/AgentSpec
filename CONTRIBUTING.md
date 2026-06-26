@@ -28,8 +28,8 @@ Run these before opening a pull request:
 ```bash
 ruff check .
 ruff format --check .
-pytest tests/ --cov=agentspec --cov=agentcontract
-python -m compileall -q agentspec agentcontract tests examples
+pytest tests/ --cov=agentspec
+python -m compileall -q agentspec tests examples
 mkdocs build --strict
 ```
 
@@ -49,7 +49,8 @@ npm run build
 - Update `CHANGELOG.md` for user-visible changes.
 - Prefer deterministic examples that do not require external API keys.
 - Do not commit `.agentspec/`, `.agentcontract/`, coverage files, or dashboard
-  build artifacts.
+  build artifacts. `.agentcontract/` is only ignored to prevent accidental
+  commits of old local trace files.
 
 ## Package and Naming Rules
 
@@ -57,10 +58,9 @@ npm run build
 - Python import: `agentspec`
 - Primary CLI: `agentspec`
 - PyPI distribution: `agentspec-contracts`
-- Deprecated compatibility alias: `agentcontract`
 
-Do not add new docs that tell users to `pip install agentspec` or
-`pip install agentcontract`; those names belong to unrelated PyPI projects.
+Do not add new docs that tell users to `pip install agentspec`; that package
+name belongs to an unrelated PyPI project.
 
 ## Release Process
 

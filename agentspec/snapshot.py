@@ -70,10 +70,7 @@ class SnapshotManager:
         Raises:
             SnapshotMismatch: If traces don't match
         """
-        env_update = (
-            os.environ.get("AGENTCONTRACT_UPDATE_SNAPSHOTS") == "1"
-            or os.environ.get("AGENTSPEC_UPDATE_SNAPSHOTS") == "1"
-        )
+        env_update = os.environ.get("AGENTSPEC_UPDATE_SNAPSHOTS") == "1"
         if update or env_update or not self.exists(name):
             path = self.save(name, trace)
             console.print(f"[green]Snapshot saved: {path}[/green]")

@@ -9,7 +9,7 @@ contract-testing core, adapter hardening, and release quality.
 - Keep the `agentspec` import and CLI stable across patch releases.
 - Improve failure messages for ordering and argument mismatches.
 - Add more zero-key examples for common tool-calling patterns.
-- Document migration notes from the legacy `agentcontract` alias.
+- Publish concise migration notes for any users of pre-beta local builds.
 
 ## 0.4.0 Adapter Hardening
 

@@ -111,7 +111,7 @@ Thumbs.db
 **/.agentspec/snapshots/
 **/.agentspec/tmp/
 
-# Legacy AgentContract state directories
+# Old local trace dirs from pre-beta builds. Ignored only to avoid committing secrets.
 .agentcontract/
 **/.agentcontract/runs/
 **/.agentcontract/snapshots/

@@ -35,10 +35,9 @@ The PyPI distribution name is `agentspec-contracts`:
 pip install agentspec-contracts
 ```
 
-The plain `agentspec` and `agentcontract` names are already used by unrelated
-PyPI projects, so this repository uses a distinct distribution name while
-keeping the clean `agentspec` import. A deprecated `agentcontract` import and
-CLI alias remain only for older local checkouts.
+The plain `agentspec` name is already used by an unrelated PyPI project, so
+this repository uses a distinct distribution name while keeping the clean
+`agentspec` import.
 
 ## Project Status
 
