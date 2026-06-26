@@ -13,6 +13,10 @@
         <link rel="canonical" href="https://github.com/Anudeepsrib/AgentSpec/security/">
       
       
+        <link rel="prev" href="../guides/custom-adapters/">
+      
+      
+        <link rel="next" href="../roadmap/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Security & Privacy - AgentSpec — Deterministic Testing for AI Agents</title>
+        <title>Security - AgentSpec — Deterministic Testing for AI Agents</title>
       
     
     
@@ -110,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Security &amp; Privacy
+              Security
             
           </span>
         </div>
@@ -273,6 +277,46 @@
         </a>
       </li>
     
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Security
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../roadmap/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Roadmap
+
+      </a>
+    </li>
   
 
       
@@ -648,6 +692,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../guides/langchain-langgraph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangChain and LangGraph
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../guides/snapshots/" class="md-nav__link">
         
   
@@ -728,6 +800,173 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#trace-data-sensitivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Data Sensitivity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurable-redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurable Redaction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disabling-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabling Persistence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ci-artifact-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI Artifact Risks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#not-legal-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not Legal Compliance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporting Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -903,8 +1142,8 @@
 <p>AgentSpec records every tool name, arguments, response, and timing for executed contracts. These traces are stored in:</p>
 <ul>
 <li>In-memory <code>AgentTrace</code></li>
-<li><code>.agentcontract/runs/*.jsonl</code> (if <code>persist=True</code>, default)</li>
-<li><code>.agentcontract/snapshots/*.json</code></li>
+<li><code>.agentspec/runs/*.jsonl</code> (if <code>persist=True</code>, default)</li>
+<li><code>.agentspec/snapshots/*.json</code></li>
 <li>Exported JSONL via <code>agentspec run -o ...</code></li>
 <li>Served via <code>agentspec ui</code> local dashboard</li>
 </ul>
@@ -922,17 +1161,17 @@
 <p>For sensitive environments or CI that may archive artifacts:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentspec<span class="w"> </span>run<span class="w"> </span>tests/<span class="w"> </span>--no-persist
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># or env:</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nv">AGENTCONTRACT_NO_PERSIST</span><span class="o">=</span><span class="m">1</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nv">AGENTSPEC_NO_PERSIST</span><span class="o">=</span><span class="m">1</span>
 </code></pre></div>
 <p>Or in code: <code>ContractRunner(persist=False)</code></p>
-<p>When disabled, no <code>.agentcontract/runs/</code> files are written.</p>
+<p>When disabled, no <code>.agentspec/runs/</code> files are written.</p>
 <h2 id="ci-artifact-risks">CI Artifact Risks<a class="headerlink" href="#ci-artifact-risks" title="Permanent link">&para;</a></h2>
-<p>Never upload <code>.agentcontract/runs/</code> or raw snapshots to public CI artifacts, S3, or GitHub Releases without redaction review.</p>
+<p>Never upload <code>.agentspec/runs/</code> or raw snapshots to public CI artifacts, S3, or GitHub Releases without redaction review.</p>
 <p>Recommended: use <code>--no-persist -o sanitized-results.jsonl</code> and inspect the export.</p>
 <p>The <code>agentspec ui</code> is local-only (127.0.0.1 by default) and does not expose data over network unless you change host.</p>
 <h2 id="not-legal-compliance">Not Legal Compliance<a class="headerlink" href="#not-legal-compliance" title="Permanent link">&para;</a></h2>
 <p>"Configurable sensitive-field redaction" and "privacy-aware trace logging" are engineering features. They are <strong>not a substitute for legal compliance review</strong>, data protection impact assessments, or formal GDPR/CCPA certification.</p>
-<p>See <a href="../SECURITY.md">SECURITY.md</a> at repo root for reporting vulnerabilities.</p>
+<p>See the repository <a href="https://github.com/Anudeepsrib/AgentSpec/blob/main/SECURITY.md">SECURITY.md</a> for reporting vulnerabilities.</p>
 <h2 id="reporting-issues">Reporting Issues<a class="headerlink" href="#reporting-issues" title="Permanent link">&para;</a></h2>
 <p>If you discover a sanitization bypass or trace leakage, open a private security advisory on GitHub.</p>
 
@@ -992,7 +1231,7 @@
       
       
     
-    <a href="https://pypi.org/project/agentcontract/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+    <a href="https://pypi.org/project/agentspec-contracts/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
     </a>
   

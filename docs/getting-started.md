@@ -2,43 +2,50 @@
 
 ## Installation
 
-Install AgentSpec via pip:
+Install the PyPI distribution:
 
 ```bash
-pip install agentcontract
+pip install agentspec-contracts
 ```
 
-*Note: The PyPI package name is `agentcontract` for backward compatibility. Import it as `agentspec` in your code.*
+Import the library as `agentspec`:
 
-### Framework-Specific Extras
+```python
+from agentspec import ContractRunner, contract
+```
+
+The `agentspec` and `agentcontract` PyPI names are owned by unrelated projects,
+so AgentSpec's distribution is `agentspec-contracts`.
+
+## Framework-Specific Extras
 
 ```bash
-pip install agentcontract[openai]      # OpenAI tool call interception
-pip install agentcontract[anthropic]   # Anthropic tool_use block interception
-pip install agentcontract[langchain]   # LangChain/LangGraph callback integration
-pip install agentcontract[all]         # All adapters
+pip install "agentspec-contracts[openai]"      # OpenAI tool call interception
+pip install "agentspec-contracts[anthropic]"   # Anthropic tool_use block interception
+pip install "agentspec-contracts[langchain]"   # LangChain/LangGraph callbacks
+pip install "agentspec-contracts[all]"         # All adapters
 ```
 
-### Development Installation
+## Development Installation
 
 ```bash
 git clone https://github.com/Anudeepsrib/AgentSpec.git
 cd AgentSpec
-pip install -e ".[dev,all]"
+pip install -e ".[dev,all,docs]"
 ```
 
 ## Core Concepts
 
-### What is a Contract?
-
-A **contract** is a deterministic assertion about what an AI agent _must do_, _must not do_, and _in what order_. Unlike LLM-as-judge evaluations that score output quality, contracts enforce binary pass/fail behavioral requirements.
+A contract is a deterministic assertion about what an AI agent must do, must
+not do, and in what order.
 
 ```python
-from agentspec import contract, ContractRunner
+from agentspec import ContractRunner, contract
+
 
 @contract("booking_flow")
 def test_correct_booking():
-    runner = ContractRunner()
+    runner = ContractRunner(persist=False)
     result = runner.run(agent=my_agent, input="Book a flight to NYC")
 
     result.must_call("search_flights")
@@ -46,7 +53,7 @@ def test_correct_booking():
     result.must_not_call("cancel_booking")
 ```
 
-### How Tool Call Interception Works
+## Tool Call Interception
 
 AgentSpec wraps your agent's tool calls so every invocation is recorded:
 
@@ -56,38 +63,39 @@ def my_agent(user_input, interceptor=None, **kwargs):
     book = interceptor.wrap_tool(real_book_fn, "book_flight")
 
     results = search(destination="NYC")
-    booking = book(flight_id=results[0]["id"])
-    return f"Booked: {booking['id']}"
+    booking = book(flight_id=results["flights"][0]["id"])
+    return f"Booked: {booking['booking_id']}"
 ```
 
-### The Assertion API
+## Assertion API
 
 | Method | Description |
-|---|---|
-| `must_call(tool)` | Assert tool was called |
-| `must_not_call(tool)` | Assert tool was NOT called |
+| --- | --- |
+| `must_call(tool)` | Assert a tool was called |
+| `must_not_call(tool)` | Assert a tool was not called |
 | `.after(other_tool)` | Assert ordering |
 | `.before(other_tool)` | Assert ordering |
 | `.immediately_after(other_tool)` | Assert adjacency |
-| `.with_args(key=val)` | Assert exact argument match |
-| `.with_args_containing(key=val)` | Assert argument subset |
+| `.with_args(key=value)` | Assert exact argument match |
+| `.with_args_containing(key=value)` | Assert argument subset |
 | `.with_args_matching(key=regex)` | Assert regex match |
 | `tool_call_count(tool)` | Get count assertion |
 | `.exactly(n)` / `.at_least(n)` / `.at_most(n)` | Count constraints |
-| `assert_completed_in(seconds)` | Performance bound |
-| `snapshot(name)` | Save/compare trajectory snapshot |
+| `assert_completed_in(steps)` | Step budget |
+| `snapshot(name)` | Save or compare trajectory snapshot |
 
 ## Running Tests
 
 ```bash
-agentspec run tests/         # Run all contract tests
-agentspec run tests/ -v      # Verbose output
-agentspec run tests/ -k booking  # Filter by keyword
-agentspec ui                 # Launch trace visualizer
+agentspec run tests/
+agentspec run tests/ -v
+agentspec run tests/ -k booking
+agentspec ui
 ```
 
 ## Next Steps
 
-- [Chaos Testing](guides/chaos-testing.md) -- Test agent resilience
-- [Multi-Agent Testing](guides/multi-agent.md) -- Test agent swarms
-- [CI Integration](guides/ci-integration.md) -- Add contracts to your pipeline
+- [Quick Start](quickstart.md)
+- [LangChain and LangGraph Adapters](guides/langchain-langgraph.md)
+- [Chaos Testing](guides/chaos-testing.md)
+- [CI Integration](guides/ci-integration.md)

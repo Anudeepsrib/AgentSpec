@@ -17,9 +17,12 @@ from agentspec.result import AgentResult, CountAssertion, ToolAssertion
 from agentspec.storage import RunLogger
 
 try:
-    __version__ = version("agentcontract")
+    __version__ = version("agentspec-contracts")
 except PackageNotFoundError:
-    __version__ = "0.0.0-dev"
+    try:
+        __version__ = version("agentcontract")
+    except PackageNotFoundError:
+        __version__ = "0.0.0-dev"
 
 __all__ = [
     "contract",

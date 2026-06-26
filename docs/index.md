@@ -7,9 +7,10 @@ AgentSpec lets you write code that asserts exactly which tools your agent must c
 - [Getting Started](getting-started.md)
 - [Quick Start](quickstart.md)
 - [Guides](guides/chaos-testing.md)
+- [Roadmap](roadmap.md)
 - [GitHub](https://github.com/Anudeepsrib/AgentSpec)
 
-> **Note**: This site is a local MkDocs preview. The `agentspec.dev` domain is currently for sale and not owned by the project. Full hosted docs are planned.
+> **Note**: Until hosted docs are published, the GitHub repository is the source of truth.
 
 ## Key Capabilities
 - Fluent assertions: `must_call`, `before`, `with_args`, `tool_call_count().exactly()`
@@ -20,15 +21,15 @@ AgentSpec lets you write code that asserts exactly which tools your agent must c
 - Pytest integration + CLI (`agentspec run`)
 - Optional adapters for OpenAI / Anthropic / LangChain
 
-See the [README](../README.md) for full positioning and limitations.
+See the quickstart and guides for installation, examples, and limitations.
 
 ## Installation
 
 ```bash
-pip install agentcontract
+pip install agentspec-contracts
 # Import as:
 from agentspec import contract, ContractRunner
 ```
 
 ## Status
-Beta. See [README](../README.md#project-status) for details on what is and is not tested.
+Beta. See [Roadmap](roadmap.md) for realistic stabilization milestones.

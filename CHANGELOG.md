@@ -1,94 +1,64 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to AgentSpec are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
+
+## [0.3.0] - 2026-06-26
+
+### Added
+- Public adoption baseline: README badges, clearer package naming, quickstart,
+  adapter examples, passing/failing contract demos, contributor guide, and beta
+  roadmap.
+- LangChain-style and LangGraph-style adapter examples that exercise the
+  callback path without requiring external API keys.
+- Explicit semantic versioning and release guidance for maintainers.
+
+### Changed
+- The canonical PyPI distribution metadata now uses `agentspec-contracts`
+  because `agentspec` and `agentcontract` are already occupied on PyPI by
+  unrelated projects.
+- The canonical import and CLI remain `agentspec`.
+- Local trace and snapshot state now defaults to `.agentspec/`.
+- README and docs now consistently describe the Apache-2.0 license.
+
+### Deprecated
+- `agentcontract` import and CLI aliases remain as compatibility shims, but new
+  docs and examples use `agentspec`.
+- Legacy `AGENTCONTRACT_*` environment variables are still honored. New docs use
+  `AGENTSPEC_*`.
 
 ## [0.2.0] - 2026-04-08
 
 ### Added
-- **Asynchronous Agent Support**: Introduced `ContractRunner.arun()` and `wrap_tool_async` to natively run async agents and trace their execution safely alongside pytest-asyncio workflows.
-- **Multi-Agent Trackers**: Added the `agent_id` property allowing the system to stringently track concurrent interactions and cleanly validate tools triggered by discrete simulated agents.
-- **Performance Profiling**: Created new assertions limiting the aggregate agent processing times (`assert_total_duration_under(ms)`) and isolating single tool execution latency constraints (`within_ms(ms)`).
-- **Advanced Chaos Testing**: Upgraded the `ChaosInjector` to support configurable `random_failures` reflecting actual network stochasticity across long-running pipelines and natively wrapped tool injections with `ContractRunner.wrap_tools()`.
+- Asynchronous agent support through `ContractRunner.arun()` and
+  `wrap_tool_async`.
+- Multi-agent trackers through the `agent_id` property, allowing concurrent
+  interactions to be isolated in assertions.
+- Performance assertions for total run duration and individual tool calls.
+- Advanced chaos testing with configurable random failures and tool wrappers.
 
 ### Changed
-- Major refactoring of assertion logic from monolithic structures in `result.py` into encapsulated module-level standalone assertions in `agentcontract/assertions/` to vastly improve open-source maintainability.
+- Assertion logic moved from a monolithic result module into
+  `agentspec/assertions/` modules for easier maintenance.
 
 ## [0.1.0] - 2024-XX-XX
 
 ### Added
-- Initial release of agentcontract
-- Core Contract API with `@contract` decorator
-- `ContractRunner` for executing agent tests
+- Initial release of the AgentSpec contract-testing API.
+- Core `@contract` decorator.
+- `ContractRunner` for executing agent tests.
 - `AgentResult` with fluent assertion API:
-  - `must_call()` / `must_not_call()` assertions
-  - `before()` / `after()` / `immediately_after()` ordering
-  - `with_args()` / `with_args_containing()` / `with_args_matching()` argument validation
-  - `exactly()` / `at_least()` / `at_most()` count assertions
-- Snapshot testing system with diff output
-- Framework adapters:
-  - OpenAI adapter
-  - Anthropic adapter
-  - LangChain adapter
-- ChaosInjector for resilience testing:
-  - `fail_tool()` for injected failures
-  - `slow_tool()` for latency injection
-  - `corrupt_tool_response()` for response corruption
-- pytest plugin with beautiful summary output
-- CLI with `run`, `snapshot`, and `init` commands
-- Full test suite with pytest
-- Complete documentation and examples
+  - `must_call()` / `must_not_call()`
+  - `before()` / `after()` / `immediately_after()`
+  - `with_args()` / `with_args_containing()` / `with_args_matching()`
+  - `exactly()` / `at_least()` / `at_most()`
+- Snapshot testing with JSON trajectory storage.
+- OpenAI, Anthropic, and LangChain adapter scaffolding.
+- Chaos injection for failures, latency, and response corruption.
+- Pytest plugin and CLI entrypoint.
 
-### Features
-
-#### Core Assertions
-- Tool call detection and validation
-- Ordering constraints for sequential tool calls
-- Argument matching (exact, subset, regex)
-- Call counting with bounds checking
-- Output content assertions
-
-#### Snapshot Testing
-- JSON-based trajectory storage
-- Automatic snapshot creation on first run
-- Colored diff output on mismatch
-- `agentcontract snapshot update` for bulk updates
-
-#### Framework Support
-- Generic adapter interface for any framework
-- Built-in adapters for major LLM frameworks
-- Easy extension for custom agents
-
-#### Chaos Engineering
-- Configurable failure injection
-- Latency simulation
-- Response corruption
-- Retry behavior validation
-
-#### Developer Experience
-- Rich terminal output with colored diffs
-- Clear, actionable error messages
-- Full type hints throughout
-- pytest integration with summary tables
-- CLI for common operations
-
-## Roadmap
-
-### [0.3.0] - Planned
-- Web dashboard for trace visualization
-- Integration with popular agent frameworks
-- Contract sharing and registry
-- Advanced snapshot management
-
-### [1.0.0] - Future
-- Stable API guarantee
-- Full documentation site
-- Plugin ecosystem
-- Enterprise features
-
----
-
-[0.2.0]: https://github.com/agentcontract/agentcontract/releases/tag/v0.2.0
-[0.1.0]: https://github.com/agentcontract/agentcontract/releases/tag/v0.1.0
+[0.3.0]: https://github.com/Anudeepsrib/AgentSpec/releases/tag/v0.3.0
+[0.2.0]: https://github.com/Anudeepsrib/AgentSpec/releases/tag/v0.2.0
+[0.1.0]: https://github.com/Anudeepsrib/AgentSpec/releases/tag/v0.1.0

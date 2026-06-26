@@ -105,7 +105,13 @@ cython_debug/
 ehthumbs.db
 Thumbs.db
 
-# AgentSpec / AgentContract - local runs, snapshots, temp (sensitive, never commit)
+# AgentSpec local runs, snapshots, temp (sensitive, never commit)
+.agentspec/
+**/.agentspec/runs/
+**/.agentspec/snapshots/
+**/.agentspec/tmp/
+
+# Legacy AgentContract state directories
 .agentcontract/
 **/.agentcontract/runs/
 **/.agentcontract/snapshots/
@@ -118,4 +124,4 @@ node_modules/
 dashboard/dist/
 
 # Keep example fixtures if any in examples/ (documented)
-!examples/.agentcontract/snapshots/
+!examples/.agentspec/snapshots/

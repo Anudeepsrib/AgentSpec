@@ -12,10 +12,10 @@ We will acknowledge within 72 hours and aim to release fixes promptly.
 
 ## Sensitive Data Handling
 
-- Traces and run logs (`.agentcontract/runs/`) may contain unredacted tool arguments unless `sanitize_keys` or defaults catch them.
+- Traces and run logs (`.agentspec/runs/`) may contain unredacted tool arguments unless `sanitize_keys` or defaults catch them.
 - Snapshots capture args at save time.
 - The local dashboard (`agentspec ui`) serves traces over localhost only.
-- Never commit `.agentcontract/` directories or push trace artifacts to public CI without review.
+- Never commit `.agentspec/` directories or push trace artifacts to public CI without review.
 - Use `--no-persist` or `ContractRunner(persist=False)` in sensitive tests.
 
 ## Supply Chain

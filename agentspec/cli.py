@@ -61,13 +61,16 @@ def run(
 
     # Set snapshot update environment variable
     if snapshot_update:
+        os.environ["AGENTSPEC_UPDATE_SNAPSHOTS"] = "1"
         os.environ["AGENTCONTRACT_UPDATE_SNAPSHOTS"] = "1"
         console.print("[yellow]Snapshot update mode enabled[/yellow]")
 
     if adapter:
+        os.environ["AGENTSPEC_ADAPTER"] = adapter
         os.environ["AGENTCONTRACT_ADAPTER"] = adapter
 
     if no_persist:
+        os.environ["AGENTSPEC_NO_PERSIST"] = "1"
         os.environ["AGENTCONTRACT_NO_PERSIST"] = "1"
         console.print("[dim]Run log persistence disabled[/dim]")
 
@@ -133,6 +136,7 @@ def snapshot_update(test_path: str, update_all: bool) -> None:
         "--snapshot-update",
     ]
 
+    os.environ["AGENTSPEC_UPDATE_SNAPSHOTS"] = "1"
     os.environ["AGENTCONTRACT_UPDATE_SNAPSHOTS"] = "1"
 
     console.print("[yellow]Updating all snapshots...[/yellow]")
@@ -149,7 +153,7 @@ def snapshot_list() -> None:
     snapshots = mgr.list_snapshots()
 
     if not snapshots:
-        console.print("[dim]No snapshots found in .agentcontract/snapshots/[/dim]")
+        console.print("[dim]No snapshots found in .agentspec/snapshots/[/dim]")
         return
 
     console.print(f"[bold]Found {len(snapshots)} snapshots:[/bold]\n")
@@ -184,7 +188,7 @@ def init(output_path: str) -> None:
 
     # Create directories
     (target / "tests").mkdir(parents=True, exist_ok=True)
-    (target / ".agentcontract" / "snapshots").mkdir(parents=True, exist_ok=True)
+    (target / ".agentspec" / "snapshots").mkdir(parents=True, exist_ok=True)
 
     # Create example test file
     example_test = target / "tests" / "example_contract.py"

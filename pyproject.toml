@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agentcontract"
+name = "agentspec-contracts"
 version = "0.3.0"
 description = "AgentSpec: Deterministic testing framework for AI agents"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
 authors = [
-    {name = "AgentContract Contributors"}
+    {name = "AgentSpec Contributors"}
 ]
 keywords = [
     "ai-agents",
@@ -72,15 +72,29 @@ agentcontract = "agentspec.cli:cli"
 "agentspec.pytest_plugin" = "agentspec.pytest_plugin"
 
 [project.urls]
-Homepage = "https://agentspec.dev"
+Homepage = "https://github.com/Anudeepsrib/AgentSpec#readme"
 Repository = "https://github.com/Anudeepsrib/AgentSpec"
-Documentation = "https://agentspec.dev/docs"
+Documentation = "https://github.com/Anudeepsrib/AgentSpec/tree/main/docs"
+Changelog = "https://github.com/Anudeepsrib/AgentSpec/blob/main/CHANGELOG.md"
+Issues = "https://github.com/Anudeepsrib/AgentSpec/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["agentspec", "agentcontract"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "dashboard/dist" = "agentspec/ui_dist"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/agentspec",
+    "/agentcontract",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+
+[tool.hatch.build.targets.sdist.force-include]
+"dashboard/dist" = "dashboard/dist"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

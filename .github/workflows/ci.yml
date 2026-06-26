@@ -35,7 +35,6 @@ jobs:
         run: |
           agentspec --version
           agentspec --help
-          agentcontract --help
           agentspec snapshot list
           agentspec init /tmp/agentspec-init-test && rm -rf /tmp/agentspec-init-test
 
@@ -73,7 +72,7 @@ jobs:
 
       - name: Run contract tests
         run: |
-          agentcontract run tests/ --no-persist -q || true
+          agentspec run tests/ --no-persist -q || true
 
   build:
     runs-on: ubuntu-latest
@@ -82,9 +81,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: Install build tools
         run: |
           pip install -e ".[dev]" build
+      - name: Build dashboard assets
+        run: |
+          cd dashboard
+          npm ci --silent || npm install --silent
+          npm run build
       - name: Build package
         run: |
           python -m build --wheel --sdist

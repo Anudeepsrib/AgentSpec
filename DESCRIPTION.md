@@ -1,1 +1,4 @@
-An intelligent agent specification framework built with Python (84.6%), JavaScript (8%), CSS (7.2%), and HTML (0.2%). Focused on creating versatile solutions in agent technology and specifications.
+AgentSpec is a deterministic Python contract-testing framework for AI agent
+tool behavior. It helps teams assert required calls, forbidden calls, ordering,
+arguments, counts, snapshots, and adapter traces without relying on subjective
+LLM-as-judge scoring.

@@ -1,178 +1,200 @@
 <div align="center">
 
-<img src="docs/logo.png" width="120" style="margin-bottom: 20px" />
+<img src="docs/logo.png" width="120" alt="AgentSpec logo" />
 
 # AgentSpec
 
-[![PyPI version](https://badge.fury.io/py/agentcontract.svg)](https://pypi.org/project/agentcontract/)
-[![Python versions](https://img.shields.io/pypi/pyversions/agentcontract.svg)](https://pypi.org/project/agentcontract/)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![CI](https://github.com/Anudeepsrib/AgentSpec/actions/workflows/ci.yml/badge.svg)](https://github.com/Anudeepsrib/AgentSpec/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/Anudeepsrib/AgentSpec/branch/main/graph/badge.svg)](https://codecov.io/gh/Anudeepsrib/AgentSpec)
+[![PyPI version](https://img.shields.io/pypi/v/agentspec-contracts.svg)](https://pypi.org/project/agentspec-contracts/)
+[![Python versions](https://img.shields.io/pypi/pyversions/agentspec-contracts.svg)](https://pypi.org/project/agentspec-contracts/)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-*Stop scoring agent output quality with "vibes". Start enforcing agent behavior with code.*
+Deterministic contract testing for AI agent tool behavior.
 
-[Documentation](https://agentspec.dev) • [Features](#key-features) • [Installation](#installation) • [Contributing](CONTRIBUTING.md)
+[Quickstart](#quickstart) | [Examples](#examples) | [Roadmap](ROADMAP.md) | [Contributing](CONTRIBUTING.md)
 
 </div>
 
----
+AgentSpec turns agent behavior into regular Python tests. Instead of asking an
+LLM judge whether an answer "seems good", you assert that the agent called the
+right tools, in the right order, with the right arguments, and within the
+expected step budget.
 
-> [!CAUTION]
-> You shipped an agent to production without tests. Now it's 3 AM and your PagerDuty is screaming. The booking agent called `cancel_reservation` before `verify_payment`. The LLM "vibe check" passed in CI, but real users hit catastrophic edge cases your evals never caught. *AgentSpec fixes this.*
+## Package Naming
 
-## 🌟 What is AgentSpec?
-
-AgentSpec is a deterministic contract testing framework for AI agents. It provides binary pass/fail assertions for tool calls, ordering, arguments, and counts—unlike probabilistic LLM output scoring.
-
-## ⚡️ Key Features
-
-| Feature | Description |
-|:---|:---|
-| 🛡 **Deterministic Assertions** | Binary pass/fail assertions for tool call ordering, exact arguments, counts, and sequences. |
-| 🧪 **ContractSuites** | Group related contracts with shared configuration, sanitization rules, and batch execution. |
-| 🛡 **PII Sanitization** | Configurable sensitive-field redaction (password, token, api_key, etc.) for privacy-aware trace logging. Not a substitute for legal compliance review. |
-| ⏱ **Async & Sync Support** | Native support for `.arun()` and `pytest-asyncio` workflows. |
-| 👯‍♀️ **Multi-Agent Tracking** | Isolate concurrent interactions using `agent_id` to prevent cross-contamination. |
-| 🌩 **Advanced Chaos Injection** | Simulate tool failures, latency spikes, response corruption, or random stochastic chaos. |
-| 📸 **Trajectory Snapshots** | Capture "golden" paths as JSON to lock down complex multi-step behaviors. |
-| 💎 **Trace Visualizer UI** | Beautiful local web dashboard to visually trace agent execution via `agentspec ui`. |
-| 🔌 **Ecosystem Adapters** | Optional adapter hooks for OpenAI, Anthropic, and LangChain/LangGraph-style agents. Install extras as needed. |
-| 🚀 **CI Integration** | Specialized GitHub Actions and JSONL export for seamless CI/CD artifact collection. |
-
-## ⚠️ Project Status
-
-**Beta / Experimental.** AgentSpec is under active development. APIs are stabilizing but may change. Use in production at your own risk. We welcome feedback via GitHub issues.
-
-## 🚀 Quick Start
-
-### Installation
-
-```bash
-pip install agentcontract
-```
-*Note: Package name on PyPI is `agentcontract` for backward compatibility with older installations. The recommended import is `import agentspec` (or `from agentspec import ...`). A deprecation shim allows `import agentcontract`.*
-
-### What AgentSpec Does NOT Test
-- Semantic quality, correctness, or "vibes" of LLM-generated text or reasoning
-- Model safety, hallucination rates, or adversarial robustness
-- Side effects or correctness of external tools/APIs you call
-- Legal, regulatory, or compliance certification (e.g., GDPR, SOC2)
-- Performance under load or production cost/latency
-
-Use AgentSpec alongside evals, observability, and human review.
-
-### Your First Contract Test
+The public Python import and primary CLI are `agentspec`:
 
 ```python
-from agentspec import contract, ContractRunner
-
-@contract("flight_booking")
-def test_books_correct_flight():
-    # Sanitize sensitive data automatically
-    runner = ContractRunner(adapter="openai", sanitize_keys=["credit_card"])
-    
-    result = runner.run(
-        agent=my_agent,
-        input="Book a flight to NYC"
-    )
-
-    # Deterministic behavior enforcement
-    result.must_call("search_flights")
-    result.must_call("book_flight").after("search_flights")
-    result.must_call("book_flight").with_args_containing(destination="NYC")
-    result.must_not_call("cancel_booking")
-    
-    # Save a golden snapshot
-    result.snapshot("happy_path") 
+from agentspec import ContractRunner, contract
 ```
 
-### Run and Export Results
+The PyPI distribution name is `agentspec-contracts`:
 
 ```bash
-# Run tests and export to JSONL for CI
-agentspec run tests/ -o results.jsonl
+pip install agentspec-contracts
+```
 
-# Visualize traces locally
+The plain `agentspec` and `agentcontract` names are already used by unrelated
+PyPI projects, so this repository uses a distinct distribution name while
+keeping the clean `agentspec` import. A deprecated `agentcontract` import and
+CLI alias remain only for older local checkouts.
+
+## Project Status
+
+AgentSpec is beta software. The core assertion API is useful today, but adapter
+coverage and CLI ergonomics are still stabilizing. See [ROADMAP.md](ROADMAP.md)
+for realistic beta milestones.
+
+## What AgentSpec Tests
+
+| Contract type | Example |
+| --- | --- |
+| Required calls | `result.must_call("verify_payment")` |
+| Forbidden calls | `result.must_not_call("cancel_reservation")` |
+| Ordering | `result.must_call("book").after("search")` |
+| Arguments | `result.must_call("search").with_args(destination="NYC")` |
+| Counts | `result.tool_call_count("api_call").at_most(3)` |
+| Snapshots | `result.snapshot("booking_happy_path")` |
+
+AgentSpec does not score writing quality, hallucination risk, safety policy
+compliance, model robustness, or the correctness of external APIs. Use it with
+evals, observability, review, and integration tests.
+
+## Quickstart
+
+Install the package and optional adapters:
+
+```bash
+pip install agentspec-contracts
+pip install "agentspec-contracts[langchain]"  # LangChain and LangGraph callbacks
+pip install "agentspec-contracts[all]"        # OpenAI, Anthropic, LangChain
+```
+
+Create `tests/test_booking_contract.py`:
+
+```python
+from agentspec import ContractRunner, contract
+
+
+def search_flights(destination: str) -> dict:
+    return {"flights": [{"id": "FL-1", "price": 240}]}
+
+
+def reserve_flight(flight_id: str) -> dict:
+    return {"reservation_id": f"RSV-{flight_id}"}
+
+
+def booking_agent(user_input: str, interceptor=None, **_):
+    search = interceptor.wrap_tool(search_flights, "search_flights")
+    reserve = interceptor.wrap_tool(reserve_flight, "reserve_flight")
+
+    results = search(destination="NYC")
+    reserve(flight_id=results["flights"][0]["id"])
+    return "reserved"
+
+
+@contract("booking_happy_path")
+def test_booking_happy_path():
+    runner = ContractRunner(persist=False)
+    result = runner.run(agent=booking_agent, input="Book a flight to NYC")
+
+    result.must_call("search_flights").with_args(destination="NYC")
+    result.must_call("reserve_flight").after("search_flights")
+    result.must_not_call("cancel_reservation")
+    result.tool_call_count("reserve_flight").exactly(1)
+```
+
+Run it:
+
+```bash
+agentspec run tests/ --no-persist
+# or use pytest directly
+pytest tests/test_booking_contract.py -p agentspec.pytest_plugin -q
+```
+
+Inspect local traces:
+
+```bash
 agentspec ui
 ```
 
-## 🧩 Architectural Contracts
+Trace and snapshot files are stored under `.agentspec/` by default. Do not
+commit them unless you have reviewed the contents for sensitive data.
 
-### The Contract Philosophy vs. Traditional Testing
+## Examples
 
-| Traditional Agent Evals | AgentSpec |
-|---|---|
-| *"Is this output good?"* (Subjective) | *"Did the agent call `verify_identity` before `transfer`?"* (Deterministic) |
-| LLM-as-judge scoring | Binary pass/fail assertions |
-| Probabilistic, flaky | Fast, reliable, cheap |
-| Expensive API calls | Local execution |
+Runnable examples live in [examples/](examples/):
 
-### Powerful Assertion Syntax
+| Example | Purpose |
+| --- | --- |
+| [quickstart.py](examples/quickstart.py) | Zero-key booking contract walkthrough |
+| [test_contract_demos.py](examples/test_contract_demos.py) | Passing and intentionally failing contract demos |
+| [langchain_adapter_example.py](examples/langchain_adapter_example.py) | LangChain-style `.invoke()` callback integration |
+| [langgraph_adapter_example.py](examples/langgraph_adapter_example.py) | LangGraph-style compiled graph callback integration |
+| [chaos_example.py](examples/chaos_example.py) | Failure and latency injection |
+| [multi_agent_example.py](examples/multi_agent_example.py) | Per-agent trace isolation |
 
-```python
-# Call and Order constraints
-result.must_call("search_flights")
-result.must_not_call("cancel_booking")
-result.must_call("auth").before("query").before("update")
-
-# Argument subsets and Regex matches
-result.must_call("search").with_args_containing(query="flights to New York")
-result.must_call("validate_email").with_args_matching(email=r"^[\w.-]+@[\w.-]+\.\w+$")
-
-# Complex Multi-Agent workflows
-result.must_call("transfer", agent_id="banking_agent").immediately_after("auth", agent_id="auth_agent")
-
-# Quantitative scaling
-result.tool_call_count("api_call").at_most(5)
-```
-
-## 🌪 Chaos Testing
-
-Test how your agent handles real-world failures:
-
-```python
-from agentspec.chaos import ChaosInjector
-
-chaos = ChaosInjector()
-chaos.fail_tool("search_flights", after_calls=1, error="RateLimitError")
-chaos.slow_tool("payment_gateway", latency_ms=5000)
-
-result = runner.run(agent=my_agent, input="Book flight", chaos=chaos)
-result.must_call("search_flights").at_least(2) # Verify retry logic
-```
-
-## 📈 Roadmap
-
-### 0.4.0 — Policy Engine
-- Define global behavioral policies across all agents.
-- Drift detection: detect when agent behavior deviates from historical benchmarks.
-- OTLP export for distributed tracing integration.
-
-### 1.0.0 — Horizon
-- Stable API guarantee.
-- Enterprise telemetry endpoints.
-- Visual Contract Editor.
-
-## 🤝 Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Run the zero-key examples:
 
 ```bash
-git clone https://github.com/Anudeepsrib/AgentSpec.git
-cd AgentSpec
-pip install -e ".[dev,all]"
-pytest tests/
+python examples/quickstart.py
+pytest examples/test_contract_demos.py -q -rx
+python examples/langchain_adapter_example.py
+python examples/langgraph_adapter_example.py
 ```
 
-## 📜 License
+## LangChain and LangGraph
 
-Distributed under the MIT License. See `LICENSE` for more information.
+AgentSpec integrates with LangChain and LangGraph through callback handlers.
+Use the adapter when your runnable or compiled graph exposes `.invoke()` or
+`.ainvoke()`:
 
-<div align="center">
+```python
+from agentspec import ContractRunner
 
-**Built by Agents. For Agents.**
+runner = ContractRunner(adapter="langchain", persist=False)
+result = runner.run(agent=compiled_graph, input={"messages": ["book NYC"]})
 
-[Documentation](https://agentspec.dev) • [Issue Tracker](https://github.com/Anudeepsrib/AgentSpec/issues)
+result.must_call("search_flights")
+result.must_call("reserve_flight").after("search_flights")
+```
 
-</div>
+For lower-level integration, use `AgentSpecCallbackHandler` directly and pass it
+through a LangChain/LangGraph config:
+
+```python
+from agentspec.adapters.langchain import AgentSpecCallbackHandler
+from agentspec.interceptor import TraceInterceptor
+
+interceptor = TraceInterceptor()
+handler = AgentSpecCallbackHandler(interceptor)
+graph.invoke({"messages": ["book NYC"]}, config={"callbacks": [handler]})
+```
+
+## CI
+
+The repository CI runs linting, tests, coverage, packaging, dashboard build, and
+docs build. Downstream projects can run contracts with the CLI:
+
+```yaml
+- name: Install AgentSpec
+  run: pip install "agentspec-contracts[langchain]"
+
+- name: Run agent contracts
+  run: agentspec run tests/ --no-persist -o agentspec-results.jsonl
+```
+
+## Versioning
+
+AgentSpec follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html):
+
+- Patch releases fix bugs without changing public behavior.
+- Minor releases add backwards-compatible features.
+- Major releases can change public APIs after a documented migration path.
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
+## License
+
+AgentSpec is distributed under the Apache License 2.0. See [LICENSE](LICENSE).

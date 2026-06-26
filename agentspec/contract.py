@@ -49,7 +49,7 @@ class ContractRunner:
         # Import adapters lazily; provide helpful error if optional dep missing
         install_hint = (
             f"To use the '{adapter}' adapter, install the optional extra:\n"
-            f"  pip install 'agentcontract[{adapter}]'   (or 'agentspec[{adapter}]')"
+            f"  pip install 'agentspec-contracts[{adapter}]'"
         )
         try:
             if adapter == "openai":

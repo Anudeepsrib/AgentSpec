@@ -10,31 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://github.com/Anudeepsrib/AgentSpec/getting-started/">
+        <link rel="canonical" href="https://github.com/Anudeepsrib/AgentSpec/guides/langchain-langgraph/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../multi-agent/">
       
       
-        <link rel="next" href="../quickstart/">
+        <link rel="next" href="../snapshots/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Installation - AgentSpec — Deterministic Testing for AI Agents</title>
+        <title>LangChain and LangGraph - AgentSpec — Deterministic Testing for AI Agents</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#langchain-and-langgraph-adapters" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="AgentSpec — Deterministic Testing for AI Agents" class="md-header__button md-logo" aria-label="AgentSpec — Deterministic Testing for AI Agents" data-md-component="logo">
+    <a href="../.." title="AgentSpec — Deterministic Testing for AI Agents" class="md-header__button md-logo" aria-label="AgentSpec — Deterministic Testing for AI Agents" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              LangChain and LangGraph
             
           </span>
         </div>
@@ -227,7 +227,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -244,13 +244,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../getting-started/" class="md-tabs__link">
           
   
   
@@ -266,11 +264,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../guides/writing-contracts/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../writing-contracts/" class="md-tabs__link">
           
   
   
@@ -288,7 +288,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../security/" class="md-tabs__link">
+      <a href="../../security/" class="md-tabs__link">
         
   
   
@@ -307,7 +307,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../roadmap/" class="md-tabs__link">
+      <a href="../../roadmap/" class="md-tabs__link">
         
   
   
@@ -345,7 +345,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../contributing/" class="md-tabs__link">
+      <a href="../../contributing/" class="md-tabs__link">
         
   
   
@@ -380,7 +380,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="AgentSpec — Deterministic Testing for AI Agents" class="md-nav__button md-logo" aria-label="AgentSpec — Deterministic Testing for AI Agents" data-md-component="logo">
+    <a href="../.." title="AgentSpec — Deterministic Testing for AI Agents" class="md-nav__button md-logo" aria-label="AgentSpec — Deterministic Testing for AI Agents" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -410,7 +410,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -434,31 +434,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   
@@ -476,7 +473,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -491,37 +488,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
         
   
   
@@ -537,114 +507,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#framework-specific-extras" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Framework-Specific Extras
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#development-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Development Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#core-concepts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Concepts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tool-call-interception" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tool Call Interception
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#assertion-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Assertion API
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running Tests
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Next Steps
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -657,7 +519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quickstart/" class="md-nav__link">
+      <a href="../../quickstart/" class="md-nav__link">
         
   
   
@@ -689,28 +551,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -728,7 +593,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -746,7 +611,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/writing-contracts/" class="md-nav__link">
+      <a href="../writing-contracts/" class="md-nav__link">
         
   
   
@@ -774,7 +639,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/chaos-testing/" class="md-nav__link">
+      <a href="../chaos-testing/" class="md-nav__link">
         
   
   
@@ -802,7 +667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/multi-agent/" class="md-nav__link">
+      <a href="../multi-agent/" class="md-nav__link">
         
   
   
@@ -827,10 +692,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../guides/langchain-langgraph/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangChain and LangGraph
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -846,6 +738,48 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#adapter-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adapter Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#direct-callback-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direct Callback Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -858,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/snapshots/" class="md-nav__link">
+      <a href="../snapshots/" class="md-nav__link">
         
   
   
@@ -886,7 +820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/ci-integration/" class="md-nav__link">
+      <a href="../ci-integration/" class="md-nav__link">
         
   
   
@@ -914,7 +848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/custom-adapters/" class="md-nav__link">
+      <a href="../custom-adapters/" class="md-nav__link">
         
   
   
@@ -949,7 +883,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/" class="md-nav__link">
+      <a href="../../security/" class="md-nav__link">
         
   
   
@@ -976,7 +910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -1030,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -1077,10 +1011,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
+  <a href="#adapter-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installation
+        Adapter Usage
       
     </span>
   </a>
@@ -1088,76 +1022,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#framework-specific-extras" class="md-nav__link">
+  <a href="#direct-callback-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Framework-Specific Extras
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#development-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Development Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#core-concepts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Concepts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tool-call-interception" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tool Call Interception
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#assertion-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Assertion API
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running Tests
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Next Steps
+        Direct Callback Usage
       
     </span>
   </a>
@@ -1184,123 +1052,41 @@
   
 
 
-<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>Install the PyPI distribution:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>agentspec-contracts
+<h1 id="langchain-and-langgraph-adapters">LangChain and LangGraph Adapters<a class="headerlink" href="#langchain-and-langgraph-adapters" title="Permanent link">&para;</a></h1>
+<p>AgentSpec uses LangChain-compatible callbacks to record tool calls from
+LangChain runnables, legacy <code>AgentExecutor</code> objects, and LangGraph compiled
+graphs.</p>
+<p>Install the optional dependencies:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;agentspec-contracts[langchain]&quot;</span>
 </code></pre></div>
-<p>Import the library as <code>agentspec</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">agentspec</span> <span class="kn">import</span> <span class="n">ContractRunner</span><span class="p">,</span> <span class="n">contract</span>
+<h2 id="adapter-usage">Adapter Usage<a class="headerlink" href="#adapter-usage" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">agentspec</span> <span class="kn">import</span> <span class="n">ContractRunner</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">runner</span> <span class="o">=</span> <span class="n">ContractRunner</span><span class="p">(</span><span class="n">adapter</span><span class="o">=</span><span class="s2">&quot;langchain&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">compiled_graph</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;book NYC&quot;</span><span class="p">]})</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">result</span><span class="o">.</span><span class="n">must_call</span><span class="p">(</span><span class="s2">&quot;search_flights&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">result</span><span class="o">.</span><span class="n">must_call</span><span class="p">(</span><span class="s2">&quot;reserve_flight&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="s2">&quot;search_flights&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>The <code>agentspec</code> and <code>agentcontract</code> PyPI names are owned by unrelated projects,
-so AgentSpec's distribution is <code>agentspec-contracts</code>.</p>
-<h2 id="framework-specific-extras">Framework-Specific Extras<a class="headerlink" href="#framework-specific-extras" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;agentspec-contracts[openai]&quot;</span><span class="w">      </span><span class="c1"># OpenAI tool call interception</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;agentspec-contracts[anthropic]&quot;</span><span class="w">   </span><span class="c1"># Anthropic tool_use block interception</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;agentspec-contracts[langchain]&quot;</span><span class="w">   </span><span class="c1"># LangChain/LangGraph callbacks</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;agentspec-contracts[all]&quot;</span><span class="w">         </span><span class="c1"># All adapters</span>
+<p>The adapter passes <code>config={"callbacks": [handler]}</code> when the agent exposes
+<code>.invoke()</code> or <code>.ainvoke()</code>.</p>
+<h2 id="direct-callback-usage">Direct Callback Usage<a class="headerlink" href="#direct-callback-usage" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">agentspec.adapters.langchain</span> <span class="kn">import</span> <span class="n">AgentSpecCallbackHandler</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">agentspec.interceptor</span> <span class="kn">import</span> <span class="n">TraceInterceptor</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">interceptor</span> <span class="o">=</span> <span class="n">TraceInterceptor</span><span class="p">()</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">handler</span> <span class="o">=</span> <span class="n">AgentSpecCallbackHandler</span><span class="p">(</span><span class="n">interceptor</span><span class="p">)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">interceptor</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">graph</span><span class="o">.</span><span class="n">invoke</span><span class="p">({</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;book NYC&quot;</span><span class="p">]},</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">handler</span><span class="p">]})</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">interceptor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </code></pre></div>
-<h2 id="development-installation">Development Installation<a class="headerlink" href="#development-installation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Anudeepsrib/AgentSpec.git
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">cd</span><span class="w"> </span>AgentSpec
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,all,docs]&quot;</span>
-</code></pre></div>
-<h2 id="core-concepts">Core Concepts<a class="headerlink" href="#core-concepts" title="Permanent link">&para;</a></h2>
-<p>A contract is a deterministic assertion about what an AI agent must do, must
-not do, and in what order.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">agentspec</span> <span class="kn">import</span> <span class="n">ContractRunner</span><span class="p">,</span> <span class="n">contract</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nd">@contract</span><span class="p">(</span><span class="s2">&quot;booking_flow&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">def</span> <span class="nf">test_correct_booking</span><span class="p">():</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">runner</span> <span class="o">=</span> <span class="n">ContractRunner</span><span class="p">(</span><span class="n">persist</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">my_agent</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;Book a flight to NYC&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">result</span><span class="o">.</span><span class="n">must_call</span><span class="p">(</span><span class="s2">&quot;search_flights&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">result</span><span class="o">.</span><span class="n">must_call</span><span class="p">(</span><span class="s2">&quot;book_flight&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="s2">&quot;search_flights&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="n">result</span><span class="o">.</span><span class="n">must_not_call</span><span class="p">(</span><span class="s2">&quot;cancel_booking&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="tool-call-interception">Tool Call Interception<a class="headerlink" href="#tool-call-interception" title="Permanent link">&para;</a></h2>
-<p>AgentSpec wraps your agent's tool calls so every invocation is recorded:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">def</span> <span class="nf">my_agent</span><span class="p">(</span><span class="n">user_input</span><span class="p">,</span> <span class="n">interceptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">search</span> <span class="o">=</span> <span class="n">interceptor</span><span class="o">.</span><span class="n">wrap_tool</span><span class="p">(</span><span class="n">real_search_fn</span><span class="p">,</span> <span class="s2">&quot;search_flights&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">book</span> <span class="o">=</span> <span class="n">interceptor</span><span class="o">.</span><span class="n">wrap_tool</span><span class="p">(</span><span class="n">real_book_fn</span><span class="p">,</span> <span class="s2">&quot;book_flight&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="s2">&quot;NYC&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">booking</span> <span class="o">=</span> <span class="n">book</span><span class="p">(</span><span class="n">flight_id</span><span class="o">=</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;flights&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Booked: </span><span class="si">{</span><span class="n">booking</span><span class="p">[</span><span class="s1">&#39;booking_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-</code></pre></div>
-<h2 id="assertion-api">Assertion API<a class="headerlink" href="#assertion-api" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>must_call(tool)</code></td>
-<td>Assert a tool was called</td>
-</tr>
-<tr>
-<td><code>must_not_call(tool)</code></td>
-<td>Assert a tool was not called</td>
-</tr>
-<tr>
-<td><code>.after(other_tool)</code></td>
-<td>Assert ordering</td>
-</tr>
-<tr>
-<td><code>.before(other_tool)</code></td>
-<td>Assert ordering</td>
-</tr>
-<tr>
-<td><code>.immediately_after(other_tool)</code></td>
-<td>Assert adjacency</td>
-</tr>
-<tr>
-<td><code>.with_args(key=value)</code></td>
-<td>Assert exact argument match</td>
-</tr>
-<tr>
-<td><code>.with_args_containing(key=value)</code></td>
-<td>Assert argument subset</td>
-</tr>
-<tr>
-<td><code>.with_args_matching(key=regex)</code></td>
-<td>Assert regex match</td>
-</tr>
-<tr>
-<td><code>tool_call_count(tool)</code></td>
-<td>Get count assertion</td>
-</tr>
-<tr>
-<td><code>.exactly(n)</code> / <code>.at_least(n)</code> / <code>.at_most(n)</code></td>
-<td>Count constraints</td>
-</tr>
-<tr>
-<td><code>assert_completed_in(steps)</code></td>
-<td>Step budget</td>
-</tr>
-<tr>
-<td><code>snapshot(name)</code></td>
-<td>Save or compare trajectory snapshot</td>
-</tr>
-</tbody>
-</table>
-<h2 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>agentspec<span class="w"> </span>run<span class="w"> </span>tests/
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>agentspec<span class="w"> </span>run<span class="w"> </span>tests/<span class="w"> </span>-v
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>agentspec<span class="w"> </span>run<span class="w"> </span>tests/<span class="w"> </span>-k<span class="w"> </span>booking
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>agentspec<span class="w"> </span>ui
-</code></pre></div>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>See:</p>
 <ul>
-<li><a href="../quickstart/">Quick Start</a></li>
-<li><a href="../guides/langchain-langgraph/">LangChain and LangGraph Adapters</a></li>
-<li><a href="../guides/chaos-testing/">Chaos Testing</a></li>
-<li><a href="../guides/ci-integration/">CI Integration</a></li>
+<li><code>examples/langchain_adapter_example.py</code></li>
+<li><code>examples/langgraph_adapter_example.py</code></li>
 </ul>
 
 
@@ -1378,10 +1164,10 @@ not do, and in what order.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.tabs", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.tabs", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

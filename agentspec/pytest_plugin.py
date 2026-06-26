@@ -23,6 +23,7 @@ class ContractReport:
         self.results: list[dict[str, Any]] = []
         self.passed = 0
         self.failed = 0
+        self.xfailed = 0
 
     def add_result(
         self,
@@ -31,19 +32,24 @@ class ContractReport:
         tool_calls: int = 0,
         assertions: int = 0,
         error: str | None = None,
+        outcome: str | None = None,
     ) -> None:
         """Add a test result."""
+        status = outcome or ("PASSED" if passed else "FAILED")
         self.results.append(
             {
                 "name": name,
                 "passed": passed,
+                "outcome": status,
                 "tool_calls": tool_calls,
                 "assertions": assertions,
                 "error": error,
             }
         )
-        if passed:
+        if status == "PASSED":
             self.passed += 1
+        elif status == "XFAIL":
+            self.xfailed += 1
         else:
             self.failed += 1
 
@@ -54,15 +60,15 @@ class ContractReport:
 
         total = len(self.results)
 
-        table = Table(title="agentcontract summary")
+        table = Table(title="AgentSpec summary")
         table.add_column("Status", style="bold")
         table.add_column("Contract", style="cyan")
         table.add_column("Metrics", style="dim")
 
         for r in self.results:
-            status = "PASSED" if r["passed"] else "FAILED"
-            status_style = "green" if r["passed"] else "red"
-            metrics = f"{r['tool_calls']} tool calls · {r['assertions']} assertions"
+            status = r["outcome"]
+            status_style = {"PASSED": "green", "XFAIL": "yellow"}.get(status, "red")
+            metrics = f"{r['tool_calls']} tool calls - {r['assertions']} assertions"
             if r["error"]:
                 metrics += f"\n[red]{r['error']}[/red]"
 
@@ -77,7 +83,10 @@ class ContractReport:
 
         # Summary line
         color = "green" if self.failed == 0 else "red"
-        summary = f"{total} contracts run · {self.passed} passed · {self.failed} failed"
+        summary = f"{total} contracts run - {self.passed} passed"
+        if self.xfailed:
+            summary += f" - {self.xfailed} xfailed"
+        summary += f" - {self.failed} failed"
         console.print(f"[bold {color}]{summary}[/bold {color}]")
         console.print()
 
@@ -145,12 +154,17 @@ def pytest_runtest_makereport(item: Any, call: Any) -> None:
         if not passed and call.excinfo:
             error_msg = str(call.excinfo.value)
 
+        outcome = None
+        if item.get_closest_marker("xfail") is not None and call.excinfo is not None:
+            outcome = "XFAIL"
+
         _report.add_result(
             name=name,
             passed=passed,
             tool_calls=tool_calls,
             assertions=assertions,
             error=error_msg,
+            outcome=outcome,
         )
 
 

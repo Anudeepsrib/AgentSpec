@@ -93,7 +93,7 @@ If snapshots have changed, the test fails with a diff showing exactly what chang
 
 ```bash
 agentspec run tests/ --snapshot-update   # Overwrite all snapshots
-agentcontract snapshot update tests/         # Interactive update
+agentspec snapshot update tests/         # Interactive update
 ```
 
 ### Recommended CI Pattern

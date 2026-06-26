@@ -1,4 +1,4 @@
-"""pytest configuration for agentcontract tests."""
+"""pytest configuration for AgentSpec tests."""
 
 import sys
 from pathlib import Path

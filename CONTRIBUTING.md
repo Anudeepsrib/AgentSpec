@@ -1,60 +1,86 @@
 # Contributing to AgentSpec
 
-First off, thank you for considering contributing to AgentSpec! It's people like you that make AgentSpec such a great tool for the AI engineering community.
-
-## Code of Conduct
-
-By participating in this project, you agree to abide by our Code of Conduct (standard Contributor Covenant).
-
-## How Can I Contribute?
-
-### Reporting Bugs
-
-- **Check the existing issues** to see if the bug has already been reported.
-- If not, **open a new issue**. Include a clear title, a description of the problem, and steps to reproduce it.
-- Include information about your environment (Python version, OS, AgentSpec version).
-
-### Suggesting Enhancements
-
-- **Open a new issue** with the tag "enhancement".
-- Provide a clear and detailed explanation of the proposed feature.
-- Explain why this feature would be useful to other users.
-
-### Pull Requests
-
-1. **Fork the repository** and create your branch from `main`.
-2. **Install dependencies**: `pip install -e ".[dev,all]"`
-3. **Write tests** for your changes. We aim for high coverage.
-4. **Ensure the test suite passes**: `pytest tests/`
-5. **Follow the style guide**: We use `ruff` for linting and `black` for formatting.
-   - Run `ruff check .`
-   - Run `black .`
-6. **Update documentation**: If you're adding a feature or changing an API, update the relevant `.md` files in the `docs/` directory.
-7. **Submit the PR** with a clear description of the changes and link to any relevant issues.
+Thanks for helping make AgentSpec useful for real agent teams. The project is
+in beta, so the best contributions are focused, tested, and easy for maintainers
+to review.
 
 ## Development Setup
-
-We recommend using a virtual environment:
 
 ```bash
 git clone https://github.com/Anudeepsrib/AgentSpec.git
 cd AgentSpec
-pip install -e ".[dev,all]"
-pytest tests/
+python -m venv .venv
+.venv\Scripts\activate  # Windows PowerShell
+python -m pip install --upgrade pip
+pip install -e ".[dev,all,docs]"
 ```
 
-### Running Tests
+On macOS or Linux, activate the environment with:
 
 ```bash
-# All tests
-pytest tests/
-
-# With coverage
-pytest --cov=agentspec tests/
+source .venv/bin/activate
 ```
 
-## Questions?
+## Local Checks
 
-Feel free to open a discussion on GitHub or reach out to the maintainers.
+Run these before opening a pull request:
 
-Happy coding!
+```bash
+ruff check .
+ruff format --check .
+pytest tests/ --cov=agentspec --cov=agentcontract
+python -m compileall -q agentspec agentcontract tests examples
+mkdocs build --strict
+```
+
+The dashboard has a separate Node toolchain:
+
+```bash
+cd dashboard
+npm ci
+npm run build
+```
+
+## Pull Request Guidelines
+
+- Keep changes scoped to one bug, feature, or documentation improvement.
+- Add or update tests when behavior changes.
+- Update `README.md`, `docs/`, or examples when public APIs change.
+- Update `CHANGELOG.md` for user-visible changes.
+- Prefer deterministic examples that do not require external API keys.
+- Do not commit `.agentspec/`, `.agentcontract/`, coverage files, or dashboard
+  build artifacts.
+
+## Package and Naming Rules
+
+- Product name: `AgentSpec`
+- Python import: `agentspec`
+- Primary CLI: `agentspec`
+- PyPI distribution: `agentspec-contracts`
+- Deprecated compatibility alias: `agentcontract`
+
+Do not add new docs that tell users to `pip install agentspec` or
+`pip install agentcontract`; those names belong to unrelated PyPI projects.
+
+## Release Process
+
+AgentSpec follows Semantic Versioning.
+
+1. Update the version in `pyproject.toml`.
+2. Add a dated entry to `CHANGELOG.md`.
+3. Run the local checks above.
+4. Build artifacts with `python -m build`.
+5. Publish the package as `agentspec-contracts`.
+6. Create a GitHub release using the changelog entry.
+
+## Reporting Issues
+
+Bug reports should include:
+
+- AgentSpec version
+- Python version and operating system
+- Minimal contract test or traceback
+- Whether persistence was enabled
+- Any adapter involved, such as LangChain, LangGraph, OpenAI, or Anthropic
+
+Security reports should follow [SECURITY.md](SECURITY.md).

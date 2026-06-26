@@ -38,14 +38,14 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Install agentcontract
+    - name: Install AgentSpec
       shell: bash
       run: |
         python -m pip install --upgrade pip
         if [ -n "${{ inputs.extra-deps }}" ]; then
-          pip install "agentcontract[${{ inputs.extra-deps }}]"
+          pip install "agentspec-contracts[${{ inputs.extra-deps }}]"
         else
-          pip install agentcontract
+          pip install agentspec-contracts
         fi
         # Install project dependencies if pyproject.toml exists
         if [ -f "pyproject.toml" ]; then
@@ -59,9 +59,9 @@ runs:
         if [ "${{ inputs.snapshot-mode }}" = "update" ]; then
           ARGS="$ARGS --snapshot-update"
         fi
-        agentcontract run $ARGS -o agentspec-results.jsonl -v
+        agentspec run $ARGS -o agentspec-results.jsonl -v
       env:
-        AGENTCONTRACT_FAIL_ON_REGRESSION: ${{ inputs.fail-on-regression }}
+        AGENTSPEC_FAIL_ON_REGRESSION: ${{ inputs.fail-on-regression }}
 
     - name: Upload results artifact
       if: ${{ inputs.output-artifact == 'true' && always() }}

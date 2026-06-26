@@ -5,8 +5,8 @@
 AgentSpec records every tool name, arguments, response, and timing for executed contracts. These traces are stored in:
 
 - In-memory `AgentTrace`
-- `.agentcontract/runs/*.jsonl` (if `persist=True`, default)
-- `.agentcontract/snapshots/*.json`
+- `.agentspec/runs/*.jsonl` (if `persist=True`, default)
+- `.agentspec/snapshots/*.json`
 - Exported JSONL via `agentspec run -o ...`
 - Served via `agentspec ui` local dashboard
 
@@ -37,16 +37,16 @@ For sensitive environments or CI that may archive artifacts:
 ```bash
 agentspec run tests/ --no-persist
 # or env:
-AGENTCONTRACT_NO_PERSIST=1
+AGENTSPEC_NO_PERSIST=1
 ```
 
 Or in code: `ContractRunner(persist=False)`
 
-When disabled, no `.agentcontract/runs/` files are written.
+When disabled, no `.agentspec/runs/` files are written.
 
 ## CI Artifact Risks
 
-Never upload `.agentcontract/runs/` or raw snapshots to public CI artifacts, S3, or GitHub Releases without redaction review.
+Never upload `.agentspec/runs/` or raw snapshots to public CI artifacts, S3, or GitHub Releases without redaction review.
 
 Recommended: use `--no-persist -o sanitized-results.jsonl` and inspect the export.
 
@@ -56,7 +56,7 @@ The `agentspec ui` is local-only (127.0.0.1 by default) and does not expose data
 
 "Configurable sensitive-field redaction" and "privacy-aware trace logging" are engineering features. They are **not a substitute for legal compliance review**, data protection impact assessments, or formal GDPR/CCPA certification.
 
-See [SECURITY.md](../SECURITY.md) at repo root for reporting vulnerabilities.
+See the repository [SECURITY.md](https://github.com/Anudeepsrib/AgentSpec/blob/main/SECURITY.md) for reporting vulnerabilities.
 
 ## Reporting Issues
 

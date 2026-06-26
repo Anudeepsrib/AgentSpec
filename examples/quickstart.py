@@ -55,7 +55,7 @@ def booking_agent(user_input: str, interceptor=None, **kwargs):
     cheapest = min(results["flights"], key=lambda f: f["price"])
     booking = book(flight_id=cheapest["id"], passenger="Alice")
 
-    return f"Booked flight {cheapest['id']} for $cheapest['price']: {booking['booking_id']}"
+    return f"Booked flight {cheapest['id']} for ${cheapest['price']}: {booking['booking_id']}"
 
 
 # ── Step 3: Write contract tests ───────────────────────────────────────────
@@ -78,11 +78,11 @@ def test_books_correct_flight():
 
 @contract("booking_performance")
 def test_booking_completes_fast():
-    """Test: The full booking flow completes within 5 seconds."""
+    """Test: The full booking flow completes within a tight step budget."""
     runner = ContractRunner(persist=False)
     result = runner.run(agent=booking_agent, input="Book me a flight to NYC")
 
-    result.assert_completed_in(5)  # seconds
+    result.assert_completed_in(5)
 
 
 # ── Step 4: Use ContractSuites for grouped tests ──────────────────────────
@@ -144,5 +144,5 @@ if __name__ == "__main__":
     print("Next steps:")
     print("  - Run with pytest:       pytest examples/quickstart.py -v")
     print("  - Save snapshots:        result.snapshot('my_flow')")
-    print("  - Visualize traces:      agentcontract ui")
+    print("  - Visualize traces:      agentspec ui")
     print("  - Add chaos:             from agentspec.chaos import ChaosInjector")
