@@ -5,6 +5,19 @@ All notable changes to AgentSpec are documented in this file.
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## Unreleased
+
+### Changed
+- Standardized repository hygiene so generated docs, dashboard builds, local
+  traces, and cache artifacts stay out of source control.
+- The dashboard now shows real snapshot loading and empty/error states instead
+  of synthetic fallback traces.
+- The bundled GitHub Action now honors `fail-on-regression: false`.
+- Refreshed the dashboard lockfile to resolve npm audit advisories.
+
+### Removed
+- Removed orphaned beta-prep planning files and unused Vite starter assets.
+
 ## [0.3.0] - 2026-06-26
 
 ### Added

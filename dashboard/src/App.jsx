@@ -1,47 +1,41 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-// Simple syntax highlighter for JSON
-const formatJSON = (obj) => {
-  if (!obj) return 'null';
-  const jsonStr = typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2);
-  
-  // Basic regex to highlight JSON
-  return jsonStr.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-    let cls = 'json-number';
-    if (/^"/.test(match)) {
-      if (/:$/.test(match)) {
-        cls = 'json-key';
-      } else {
-        cls = 'json-string';
-      }
-    } else if (/true|false/.test(match)) {
-      cls = 'json-boolean';
-    } else if (/null/.test(match)) {
-      cls = 'json-boolean';
-    }
-    return `<span class="${cls}">${match}</span>`;
-  });
+const formatJSON = (value) => JSON.stringify(value ?? null, null, 2)
+
+const secondsToMs = (value) => (
+  typeof value === 'number' && Number.isFinite(value) ? value * 1000 : null
+)
+
+const formatDuration = (durationMs) => {
+  if (!Number.isFinite(durationMs) || durationMs <= 0) return 'duration unavailable'
+  return `${durationMs.toFixed(1)}ms`
 }
 
 const TraceVisualization = ({ trace }) => {
   if (!trace || !trace.tool_calls || trace.tool_calls.length === 0) return null;
 
-  // Synthesize timeline logic for rendering waterfall
   const calls = trace.tool_calls;
-  let runningTime = 0;
-  
-  const processedCalls = calls.map(call => {
-    const duration = call.duration_ms || Math.random() * 500 + 100;
-    const item = {
+  const traceStartMs = secondsToMs(trace.start_time) ?? secondsToMs(calls[0]?.timestamp) ?? 0;
+  const processedCalls = calls.map((call, idx) => {
+    const timestampMs = secondsToMs(call.timestamp);
+    const durationMs = Number.isFinite(call.duration_ms) ? call.duration_ms : 0;
+    return {
       ...call,
-      startMs: runningTime,
-      durationMs: duration
-    };
-    runningTime += duration + (Math.random() * 100); // add small synthetic delay between calls
-    return item;
-  });
+      startMs: timestampMs === null ? idx : Math.max(0, timestampMs - traceStartMs),
+      durationMs
+    }
+  })
 
-  const totalMs = runningTime;
+  const traceEndMs = secondsToMs(trace.end_time)
+  const lastCallEndMs = Math.max(
+    ...processedCalls.map(call => call.startMs + call.durationMs),
+    0
+  )
+  const totalMs = Math.max(
+    traceEndMs === null ? lastCallEndMs : traceEndMs - traceStartMs,
+    lastCallEndMs,
+    1
+  )
 
   return (
     <div className="trace-graph">
@@ -78,7 +72,7 @@ const TraceVisualization = ({ trace }) => {
                 </div>
                 <div className="graph-bar" style={{ width: '100%' }}></div>
                 <div className="graph-tooltip">
-                  {call.name}: {call.durationMs.toFixed(1)}ms
+                  {call.name}: {formatDuration(call.durationMs)}
                 </div>
               </div>
             </div>
@@ -94,6 +88,7 @@ function App() {
   const [snapshots, setSnapshots] = useState([])
   const [selectedSnapshot, setSelectedSnapshot] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     // In production this will be served by the same host, so /api/snapshots works.
@@ -101,18 +96,17 @@ function App() {
     const fetchSnapshots = async () => {
       try {
         const response = await fetch('/api/snapshots')
-        if (response.ok) {
-          const data = await response.json()
-          setSnapshots(data)
-          if (data.length > 0) {
-            setSelectedSnapshot(data[0])
-          }
-        } else {
-          // Dummy data fallback for UI testing
-          fallbackData()
+        if (!response.ok) {
+          throw new Error(`Snapshot API returned ${response.status}`)
         }
+        const data = await response.json()
+        setSnapshots(data)
+        setSelectedSnapshot(data[0] ?? null)
+        setError(null)
       } catch (e) {
-        fallbackData()
+        setSnapshots([])
+        setSelectedSnapshot(null)
+        setError(e instanceof Error ? e.message : 'Unable to load snapshots')
       } finally {
         setLoading(false)
       }
@@ -121,44 +115,8 @@ function App() {
     fetchSnapshots()
   }, [])
 
-  const fallbackData = () => {
-    const dummy = [
-      {
-        id: "flight_booking_flow",
-        name: "test_books_correct_flight",
-        filename: "flight_booking_flow.json",
-        path: ".agentspec/snapshots/flight_booking_flow.json",
-        trace: {
-          start_time: Date.now() / 1000 - 10,
-          end_time: Date.now() / 1000,
-          tool_calls: [
-            { name: "search_flights", args: { destination: "NYC" }, step: 0, duration_ms: 1200, agent_id: "travel_agent" },
-            { name: "verify_availability", args: { date: "10-22-2027" }, step: 1, duration_ms: 2500, agent_id: "data_agent" },
-            { name: "book_flight", args: { id: "FL001", passenger: "John" }, step: 2, duration_ms: 300, agent_id: "travel_agent" }
-          ]
-        }
-      },
-      {
-        id: "multi_agent_flow",
-        name: "test_complex_mult_agent_workflow",
-        filename: "multi_agent_flow.json",
-        path: ".agentspec/snapshots/multi_agent_flow.json",
-        trace: {
-          start_time: Date.now() / 1000 - 5,
-          end_time: Date.now() / 1000,
-          tool_calls: [
-            { name: "auth_user", args: { token: "abc" }, step: 0, duration_ms: 50, agent_id: "auth_agent" },
-            { name: "db_query", args: { query: "SELECT * FROM users" }, step: 1, duration_ms: 500, agent_id: "data_agent" },
-            { name: "update_logs", args: { status: "success" }, step: 2, duration_ms: 150, agent_id: "audit_agent" }
-          ]
-        }
-      }
-    ]
-    setSnapshots(dummy)
-    setSelectedSnapshot(dummy[0])
-  }
-
   const formatTime = (epochSeconds) => {
+    if (!epochSeconds) return 'Unknown'
     return new Date(epochSeconds * 1000).toLocaleString()
   }
 
@@ -189,6 +147,8 @@ function App() {
             <h2 style={{ marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 600 }}>Snapshots</h2>
             {loading ? (
               <div style={{ color: 'var(--text-muted)' }}>Loading traces...</div>
+            ) : error ? (
+              <div className="empty-state">Unable to load snapshots: {error}</div>
             ) : snapshots.length === 0 ? (
               <div className="empty-state">No snapshots found in .agentspec/snapshots</div>
             ) : (
@@ -245,7 +205,7 @@ function App() {
                 <div className="trace-timeline">
                   {selectedSnapshot.trace?.tool_calls?.map((call, idx) => (
                     <div key={idx} className="tool-call-item">
-                      <div className="tool-marker">{call.step}</div>
+                      <div className="tool-marker">{call.step ?? idx}</div>
                       <div className="glass-panel tool-content">
                         <div className="tool-header">
                           <div className="tool-name-container">
@@ -265,8 +225,9 @@ function App() {
                           <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Arguments</div>
                           <pre 
                             className="json-block"
-                            dangerouslySetInnerHTML={{ __html: formatJSON(call.args) }}
-                          />
+                          >
+                            {formatJSON(call.args)}
+                          </pre>
                         </div>
 
                         {call.response && (
@@ -274,8 +235,9 @@ function App() {
                             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Response</div>
                             <pre 
                               className="json-block"
-                              dangerouslySetInnerHTML={{ __html: formatJSON(call.response) }}
-                            />
+                            >
+                              {formatJSON(call.response)}
+                            </pre>
                           </div>
                         )}
                       </div>

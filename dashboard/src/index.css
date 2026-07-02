@@ -411,11 +411,6 @@ code, pre {
   color: #e5e7eb;
 }
 
-.json-key { color: #8b5cf6; }
-.json-string { color: #34d399; }
-.json-number { color: #fbbf24; }
-.json-boolean { color: #f87171; }
-
 /* Empty state */
 .empty-state {
   display: flex;

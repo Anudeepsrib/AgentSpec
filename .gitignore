@@ -58,6 +58,9 @@ cover/
 # Sphinx documentation
 docs/_build/
 
+# MkDocs generated site
+site/
+
 # PyBuilder
 .pybuilder/
 target/
@@ -122,6 +125,7 @@ results.jsonl
 # Node / dashboard
 node_modules/
 dashboard/dist/
+dashboard/.vite/
 
 # Keep example fixtures if any in examples/ (documented)
 !examples/.agentspec/snapshots/
